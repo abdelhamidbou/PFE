@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Espace Médecin - DermaFlow AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root {
+--primary: #0891b2;
+--primary-dark: #0e7490;
+--primary-light: #cffafe;
+--bg-light: #f8fafc;
+--white: #ffffff;
+--urgent-red: #ef4444;
+--border: #e2e8f0;
+--text-dark: #1e293b;
+--success-green: #10b981;
+}
+
+body {
+font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+background-color: var(--bg-light);
+margin: 0;
+color: var(--text-dark);
+}
+
+header {
+background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+color: white;
+padding: 20px 10%;
+display: flex;
+justify-content: space-between;
+align-items: center;
+box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.doctor-profile {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.doctor-profile img {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 2px solid white;
+    background: white;
+}
+
+nav {
+    background: white;
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    padding: 15px 0;
+    border-bottom: 1px solid var(--border);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.tab {
+cursor: pointer;
+font-weight: 600;
+color: #64748b;
+padding-bottom: 5px;
+transition: 0.3s;
+}
+
+.tab.active {
+color: var(--primary);
+border-bottom: 3px solid var(--primary);
+}
+
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 30px auto;
+    display: none;
+    animation: fadeIn 0.4s;
+}
+
+.container.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.grid-main {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 20px;
+}
+
+.card {
+    background: white;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+    margin-bottom: 20px;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #f1f5f9;
+    padding-bottom: 10px;
+}
+
+.card-header h3 {
+margin: 0;
+color: var(--primary);
+font-size: 1.1rem;
+}
+
+.patient-now {
+background: var(--primary-light);
+border-radius: 10px;
+padding: 20px;
+border-left: 6px solid var(--primary);
+}
+
+.ia-box {
+background: #fff;
+border: 1px dashed var(--primary);
+padding: 10px;
+border-radius: 8px;
+margin-top: 10px;
+}
+
+.btn {
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-start {
+    background: var(--success-green);
+    color: white;
+}
+
+.btn-stop {
+    background: var(--urgent-red);
+    color: white;
+}
+
+.btn-outline {
+    background: none;
+    border: 1px solid white;
+    color: white;
+}
+
+.waiting-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.badge {
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 0.7rem;
+    font-weight: bold;
+    color: white;
+}
+
+.bg-urgent {
+    background: var(--urgent-red);
+}
+
+.bg-normal {
+    background: #3b82f6;
+}
+
+.form-group { margin-bottom: 18px; }
+.form-group label { display: block; font-weight: 600; color: var(--text-dark); margin-bottom: 6px; font-size: 0.9rem; }
+.form-group input, .form-group select, .form-group textarea {
+    width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px;
+    font-size: 0.95rem; box-sizing: border-box; transition: border-color 0.2s; font-family: inherit;
+}
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(8, 145, 178, 0.15);
+}
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+.form-actions { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
+.form-actions .btn { padding: 10px 20px; }
+.form-error { font-size: 0.8rem; color: var(--urgent-red); margin-top: 4px; }
+</style>
+</head>
+
+<body>
+
+    <header>
+        <div class="doctor-profile">
+            <img src="https://img.icons8.com/color/96/doctor-male-skin-type-4.png" alt="Docteur">
+            <div>
+                <h2 style="margin:0">Dr. Karim Bennani</h2>
+                <small>Spécialité: Dermatologie Clinique | Cabinet 04</small>
+            </div>
+        </div>
+        <button class="btn btn-outline" onclick="window.location.href='accueil.html'">Déconnexion</button>
+    </header>
+
+    <nav>
+        <div class="tab active" onclick="switchTab('dashboard', this)">Consultations du Jour</div>
+        <div class="tab" onclick="switchTab('historique', this)">Historique Patients</div>
+        <div class="tab" onclick="switchTab('stats', this)">Mes Statistiques</div>
+    </nav>
+
+    <div id="dashboard" class="container active">
+        <div class="grid-main">
+
+            <div>
+                <div class="card patient-now">
+                    <div style="display:flex; justify-content:space-between; align-items:start;">
+                        <div>
+                            <span style="color:var(--primary); font-weight:bold;">EN COURS</span>
+                            <h2 style="margin:5px 0;">Ahmed El Mansouri</h2>
+                            <p><b>Âge:</b> 45 ans | <b>Motif:</b> Eruption cutanée et prurit</p>
+                        </div>
+                        <div style="text-align:right;">
+                            <div class="badge bg-urgent" style="font-size:1rem; padding:8px 15px;">URGENT (IA)</div>
+                        </div>
+                    </div>
+
+                    <div class="ia-box">
+                        <strong>Analyse IA Prédictive:</strong>
+                        <ul style="margin:5px 0; font-size:0.9rem;">
+                            <li>Durée estimée de consultation: <b>22 min</b></li>
+                            <li>Niveau de priorité: <b>9/10</b></li>
+                            <li>Analyse image (Dermatosocopie): <span style="color:var(--urgent-red);">Suspicion ZES (78%)</span></li>
+                        </ul>
+                    </div>
+
+                    <div style="margin-top:20px; display:flex; gap:10px;">
+                        <button class="btn btn-start">Commencer Consultation</button>
+                        <button class="btn btn-stop">Terminer & Ordonnance</button>
+                        <button class="btn" style="background:#64748b; color:white;">Dossier Médical</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Notes de Consultation</h3>
+                    </div>
+                    <form id="formNotesConsultation">
+                        <div class="form-group">
+                            <label for="motif">Motif de consultation</label>
+                            <input type="text" id="motif" name="motif" placeholder="ex: Eruption cutanée, prurit, grain de beauté" value="Eruption cutanée et prurit">
+                        </div>
+                        <div class="form-group">
+                            <label for="observations">Observations cliniques</label>
+                            <textarea id="observations" name="observations" rows="4" placeholder="Examen dermatologique, signes vitaux, conclusion..."></textarea>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="dureeConsult">Durée (min)</label>
+                                <input type="number" id="dureeConsult" name="dureeConsult" min="5" max="120" value="22" placeholder="22">
+                            </div>
+                            <div class="form-group">
+                                <label for="priorite">Priorité (1-10)</label>
+                                <input type="number" id="priorite" name="priorite" min="1" max="10" value="9" placeholder="9">
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-start">Enregistrer les notes</button>
+                            <button type="button" class="btn" style="background:#64748b; color:white;">Générer ordonnance</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Prochains Patients</h3>
+                    </div>
+                    <div class="waiting-item">
+                        <div><b>#02</b> Salma Bennani<br><small>11:15 - Contrôle</small></div>
+                        <span class="badge bg-normal">NORMAL</span>
+                    </div>
+                    <div class="waiting-item">
+                        <div><b>#03</b> Youssef Tazi<br><small>11:45 - Dermatosocopie</small></div>
+                        <span class="badge bg-normal">NORMAL</span>
+                    </div>
+                    <div class="waiting-item" style="background:#fff5f5;">
+                        <div><b>#04</b> Driss Amrani<br><small>12:15 - Urgence</small></div>
+                        <span class="badge bg-urgent">URGENT</span>
+                    </div>
+                </div>
+
+                <div class="card" style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color:white;">
+                    <h4 style="margin-top:0;">Temps Global</h4>
+                    <p>Retard estimé: <b>+12 min</b></p>
+                    <small>IA suggère d'accélérer les contrôles simples.</small>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="historique" class="container">
+        <div class="card">
+            <div class="card-header">
+                <h3>Recherche Historique Patients</h3>
+            </div>
+            <form id="formRecherchePatient">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="rechNom">Nom ou prénom</label>
+                        <input type="text" id="rechNom" name="nom" placeholder="Nom du patient">
+                    </div>
+                    <div class="form-group">
+                        <label for="rechCIN">CIN</label>
+                        <input type="text" id="rechCIN" name="cin" placeholder="Numéro CIN">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="rechDateDebut">Date début</label>
+                        <input type="date" id="rechDateDebut" name="dateDebut">
+                    </div>
+                    <div class="form-group">
+                        <label for="rechDateFin">Date fin</label>
+                        <input type="date" id="rechDateFin" name="dateFin">
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-start">Rechercher</button>
+                    <button type="reset" class="btn" style="background:#64748b; color:white;">Réinitialiser</button>
+                </div>
+            </form>
+            <p style="margin-top:20px; color:#64748b;">La liste des patients correspondants s'affichera ici.</p>
+        </div>
+    </div>
+
+    <div id="stats" class="container">
+        <div class="card">
+            <div class="card-header">
+                <h3>Mes Statistiques Mensuelles</h3>
+            </div>
+            <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:20px; text-align:center;">
+                <div class="sub-box" style="padding:20px; background:#f1f5f9; border-radius:10px;">
+                    <h4>Patients vus</h4>
+                    <p style="font-size:2rem; font-weight:bold;">142</p>
+                </div>
+                <div class="sub-box" style="padding:20px; background:#f1f5f9; border-radius:10px;">
+                    <h4>Temps moy / Patient</h4>
+                    <p style="font-size:2rem; font-weight:bold;">18 min</p>
+                </div>
+                <div class="sub-box" style="padding:20px; background:#f1f5f9; border-radius:10px;">
+                    <h4>Satisfaction</h4>
+                    <p style="font-size:2rem; font-weight:bold;">4.8/5</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tabId, el) {
+            document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            el.classList.add('active');
+        }
+        document.getElementById('formNotesConsultation').addEventListener('submit', function(e) {
+            e.preventDefault();
+            console.log('Notes enregistrées', { motif: document.getElementById('motif').value, observations: document.getElementById('observations').value });
+            alert('Notes de consultation enregistrées.');
+        });
+        document.getElementById('formRecherchePatient').addEventListener('submit', function(e) {
+            e.preventDefault();
+            console.log('Recherche', { nom: document.getElementById('rechNom').value, cin: document.getElementById('rechCIN').value });
+            alert('Recherche effectuée (résultats à connecter au backend).');
+        });
+    </script>
+
+</body>
+
+</html>
+</code>

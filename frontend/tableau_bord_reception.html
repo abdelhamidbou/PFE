@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Espace Réception - DermaFlow AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root {
+--primary: #0891b2;
+--primary-dark: #0e7490;
+--primary-light: #cffafe;
+--bg-light: #f1f5f9;
+--white: #ffffff;
+--urgent-red: #dc2626;
+--border: #e2e8f0;
+--text-dark: #1e293b;
+}
+
+body { font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif; background-color: var(--bg-light); margin: 0; color: var(--text-dark); }
+
+header {
+background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+color: white;
+padding: 20px 10%;
+display: flex;
+justify-content: space-between;
+align-items: center;
+box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+.user-profile { display: flex; align-items: center; gap: 15px; }
+.user-profile img { width: 60px; height: 60px; border-radius: 50%; border: 2px solid white; background: white;}
+
+nav {
+    background: white;
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    padding: 15px 0;
+    border-bottom: 1px solid var(--border);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+.tab { cursor: pointer; font-weight: 600; color: #64748b; padding-bottom: 5px; transition: 0.3s; }
+.tab.active { color: var(--primary); border-bottom: 3px solid var(--primary); }
+
+.container { width: 90%; max-width: 1100px; margin: 30px auto; display: none; animation: fadeIn 0.4s; }
+.container.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 25px; }
+.stat-card { background: white; padding: 15px; border-radius: 12px; border-left: 5px solid var(--primary); text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+.stat-card h4 { margin: 0; font-size: 0.8rem; color: #64748b; }
+.stat-card p { margin: 5px 0; font-size: 1.5rem; font-weight: bold; }
+
+.card { background: white; border-radius: 12px; border: 1px solid var(--border); padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); margin-bottom: 20px; }
+.card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px; }
+.card-header h3 { margin: 0; color: var(--primary); font-size: 1.1rem; }
+
+table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+th { text-align: left; padding: 12px; color: #64748b; font-size: 0.9rem; border-bottom: 2px solid #f1f5f9; background: #fafafa; }
+td { padding: 12px; border-bottom: 1px solid #f1f5f9; font-size: 0.9rem; }
+
+.badge { padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; color: white; }
+.bg-urgent { background: var(--urgent-red); }
+.bg-normal { background: #3b82f6; }
+.bg-available { background: #10b981; }
+
+.btn-action { padding: 8px 12px; border-radius: 6px; border: none; font-weight: bold; cursor: pointer; color: white; font-size: 0.8rem; }
+.btn-green { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); }
+.btn-green:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(8, 145, 178, 0.3); }
+.btn-outline { background: none; border: 1px solid white; color: white; }
+
+.search-box { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 20px; }
+
+.form-group { margin-bottom: 18px; }
+.form-group label { display: block; font-weight: 600; color: var(--text-dark); margin-bottom: 6px; font-size: 0.9rem; }
+.form-group input, .form-group select, .form-group textarea {
+    width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px;
+    font-size: 0.95rem; box-sizing: border-box; transition: border-color 0.2s; font-family: inherit;
+}
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(8, 145, 178, 0.15);
+}
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+.form-actions { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
+.form-actions .btn-action { padding: 10px 20px; }
+.modal-form { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
+.modal-form.active { display: flex; }
+.modal-form .card { max-width: 560px; width: 90%; max-height: 90vh; overflow-y: auto; }
+.form-error { font-size: 0.8rem; color: var(--urgent-red); margin-top: 4px; }
+</style>
+</head>
+<body>
+
+<header>
+    <div class="user-profile">
+        <img src="https://img.icons8.com/color/96/administrator-female.png" alt="Réception">
+        <div>
+            <h2 style="margin:0">Espace Réception</h2>
+            <small>Agent: Meryem Bennani | Session: Active</small>
+        </div>
+    </div>
+    <button class="btn-action btn-outline">Déconnexion</button>
+</header>
+
+<nav>
+    <div class="tab active" onclick="switchTab('file', this)">Gestion de File</div>
+    <div class="tab" onclick="switchTab('patients', this)">Registre des Patients</div>
+    <div class="tab" onclick="switchTab('planning', this)">Planning Hebdomadaire</div>
+</nav>
+
+<div id="file" class="container active">
+    <div class="grid-4">
+        <div class="stat-card"><h4>En Attente</h4><p>08</p></div>
+        <div class="stat-card"><h4>Consultés</h4><p>15</p></div>
+        <div class="stat-card" style="border-left-color: var(--urgent-red);"><h4>Urgences (IA)</h4><p>02</p></div>
+        <div class="stat-card"><h4>Temps Moyen</h4><p>22 min</p></div>
+    </div>
+
+    <div class="card">
+        <div class="card-header"><h3>File d'Attente - Aujourd'hui</h3></div>
+        <table>
+            <thead>
+                <tr>
+                    <th>N°</th>
+                    <th>Patient</th>
+                    <th>Heure RDV</th>
+                    <th>Classification IA</th>
+                    <th>Médecin</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="background: #fff5f5;">
+                    <td><b>01</b></td>
+                    <td><b>Omar Slimani</b></td>
+                    <td>10:45</td>
+                    <td><span class="badge bg-urgent">URGENT</span></td>
+                    <td>Dr. Bennani</td>
+                    <td><button class="btn-action btn-green">Check-in</button></td>
+                </tr>
+                <tr>
+                    <td>02</td>
+                    <td>Fatima Zahra</td>
+                    <td>10:30</td>
+                    <td><span class="badge bg-normal">NORMAL</span></td>
+                    <td>Dr. Amrani</td>
+                    <td><button class="btn-action" style="background:#64748b;">En Cours</button></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div id="patients" class="container">
+    <div class="card">
+        <div class="card-header">
+            <h3>Base de données Patients</h3>
+            <button class="btn-action btn-green" onclick="openModalPatient()">+ Nouveau Dossier</button>
+        </div>
+        <form id="formRecherchePatient" style="margin-bottom:20px;">
+            <div class="form-group" style="margin-bottom:0;">
+                <label for="searchPatient">Rechercher un patient</label>
+                <input type="text" id="searchPatient" class="search-box" placeholder="Nom, CIN ou N° de téléphone..." name="search">
+            </div>
+        </form>
+        <table>
+            <thead>
+                <tr>
+                    <th>CIN</th>
+                    <th>Nom Complet</th>
+                    <th>Âge</th>
+                    <th>Dernière Visite</th>
+                    <th>Historique</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>AB123456</td>
+                    <td>Ahmed El Mansouri</td>
+                    <td>45 ans</td>
+                    <td>10/01/2026</td>
+                    <td><button class="btn-action btn-green">Ouvrir</button></td>
+                </tr>
+                <tr>
+                    <td>CD789012</td>
+                    <td>Salma Bennani</td>
+                    <td>29 ans</td>
+                    <td>05/02/2026</td>
+                    <td><button class="btn-action btn-green">Ouvrir</button></td>
+                </tr>
+                <tr>
+                    <td>EE554433</td>
+                    <td>Youssef Tazi</td>
+                    <td>62 ans</td>
+                    <td>02/02/2026</td>
+                    <td><button class="btn-action btn-green">Ouvrir</button></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div id="planning" class="container">
+    <div class="card">
+        <div class="card-header"><h3>Disponibilité des Médecins</h3></div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Médecin</th>
+                    <th>Spécialité</th>
+                    <th>Lundi - Vendredi</th>
+                    <th>Samedi</th>
+                    <th>Statut</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><b>Dr. Karim Bennani</b></td>
+                    <td>Dermatologie Clinique</td>
+                    <td>09:00 - 17:00</td>
+                    <td>09:00 - 13:00</td>
+                    <td><span class="badge bg-available">Disponible</span></td>
+                </tr>
+                <tr>
+                    <td><b>Dr. Hind Naciri</b></td>
+                    <td>Dermato-Esthétique</td>
+                    <td>08:30 - 16:30</td>
+                    <td>Repos</td>
+                    <td><span class="badge bg-available">Disponible</span></td>
+                </tr>
+                <tr>
+                    <td><b>Dr. Fouad Amrani</b></td>
+                    <td>Trichologie</td>
+                    <td>10:00 - 19:00</td>
+                    <td>Repos</td>
+                    <td><span class="badge" style="background:#f59e0b;">En Congé</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="grid-4" style="margin-top:20px;">
+        <div class="card" style="grid-column: span 4;">
+            <h3>Note Administration</h3>
+            <p style="font-size: 0.9rem; color: #64748b;">Les rendez-vous du Dr. Amrani sont suspendus jusqu'au 15 Février.</p>
+        </div>
+    </div>
+</div>
+
+<div id="modalPatient" class="modal-form">
+    <div class="card">
+        <div class="card-header"><h3>Nouveau dossier patient</h3> <button class="btn-action" style="background:#64748b;" onclick="closeModalPatient()">Fermer</button></div>
+        <form id="formNouveauPatient">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="patientCIN">CIN *</label>
+                    <input type="text" id="patientCIN" name="cin" placeholder="AB123456" required maxlength="20">
+                </div>
+                <div class="form-group">
+                    <label for="patientGenre">Genre</label>
+                    <select id="patientGenre" name="genre">
+                        <option value="">— Choisir —</option>
+                        <option value="M">Homme</option>
+                        <option value="F">Femme</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="patientNom">Nom *</label>
+                    <input type="text" id="patientNom" name="nom" placeholder="El Mansouri" required>
+                </div>
+                <div class="form-group">
+                    <label for="patientPrenom">Prénom *</label>
+                    <input type="text" id="patientPrenom" name="prenom" placeholder="Ahmed" required>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="patientDateNaiss">Date de naissance *</label>
+                    <input type="date" id="patientDateNaiss" name="dateNaiss" required>
+                </div>
+                <div class="form-group">
+                    <label for="patientTel">Téléphone *</label>
+                    <input type="tel" id="patientTel" name="telephone" placeholder="06 12 34 56 78" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="patientEmail">Adresse e-mail</label>
+                <input type="email" id="patientEmail" name="email" placeholder="patient@email.com">
+            </div>
+            <div class="form-group">
+                <label for="patientAdresse">Adresse</label>
+                <input type="text" id="patientAdresse" name="adresse" placeholder="123 Boulevard Anfa, Casablanca">
+            </div>
+            <div class="form-group">
+                <label for="patientAllergies">Allergies connues</label>
+                <input type="text" id="patientAllergies" name="allergies" placeholder="Pénicilline, etc.">
+            </div>
+            <div class="form-group">
+                <label for="patientNotes">Notes (optionnel)</label>
+                <textarea id="patientNotes" name="notes" rows="2" placeholder="Remarques réception..."></textarea>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn-action btn-green">Créer le dossier</button>
+                <button type="button" class="btn-action" style="background:#64748b;" onclick="closeModalPatient()">Annuler</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openModalPatient() { document.getElementById('modalPatient').classList.add('active'); }
+    function closeModalPatient() { document.getElementById('modalPatient').classList.remove('active'); }
+    document.getElementById('formNouveauPatient').addEventListener('submit', function(e) {
+        e.preventDefault();
+        alert('Dossier patient créé (à connecter au backend).');
+        closeModalPatient();
+        this.reset();
+    });
+    function switchTab(tabId, el) {
+        document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        el.classList.add('active');
+    }
+</script>
+
+</body>
+</html>
+</code>

@@ -1,0 +1,25 @@
+Fichiers Frontend - DermaFlow AI (En Français & Dermatologie)
+===============================================================
+
+accueil.html                         - Page d'accueil publique
+connexion.html                       - Page de connexion pour tous les utilisateurs
+inscription.html                     - Page d'inscription pour tous les utilisateurs
+tableau_bord_patient.html            - Tableau de bord du patient
+tableau_bord_dermatologue.html       - Tableau de bord du médecin dermatologue
+tableau_bord_admin.html              - Tableau de bord de l'administrateur
+tableau_bord_reception.html          - Tableau de bord de la réception
+assistant.html                       - Assistant IA virtuel pour les questions dermatologiques
+
+---
+
+## Architecture Frontend
+
+Toutes les redirections entre pages sont configurées en français :
+- Home/Accueil → accueil.html
+- Login → connexion.html
+- Register → inscription.html
+- Patient Dashboard → tableau_bord_patient.html
+- Doctor Dashboard → tableau_bord_dermatologue.html
+- Admin Dashboard → tableau_bord_admin.html
+- Reception Dashboard → tableau_bord_reception.html
+- Chatbot → assistant.html

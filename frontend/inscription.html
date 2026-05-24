@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inscription - DermaFlow AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+background: linear-gradient(135deg, #ecfeff 0%, #ffffff 50%, #e0f2fe 100%);
+min-height: 100vh;
+display: flex;
+align-items: center;
+justify-content: center;
+color: #334155;
+padding: 20px;
+}
+.register-container {
+background: white;
+border-radius: 24px;
+box-shadow: 0 25px 80px rgba(0,0,0,0.1);
+width: 100%;
+max-width: 1100px;
+display: flex;
+overflow: hidden;
+}
+.register-left {
+flex: 1;
+background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%);
+padding: 60px 50px;
+color: white;
+display: flex;
+flex-direction: column;
+justify-content: center;
+}
+.register-left h1 {
+font-size: 2.5rem;
+font-weight: 900;
+margin-bottom: 20px;
+line-height: 1.2;
+}
+.register-left p {
+font-size: 1.1rem;
+opacity: 0.9;
+line-height: 1.7;
+margin-bottom: 40px;
+}
+.register-left-features {
+display: flex;
+flex-direction: column;
+gap: 20px;
+}
+.feature {
+display: flex;
+align-items: center;
+gap: 15px;
+}
+.feature i {
+width: 40px;
+height: 40px;
+background: rgba(255,255,255,0.15);
+border-radius: 10px;
+display: flex;
+align-items: center;
+justify-content: center;
+font-size: 1rem;
+}
+.feature span { font-weight: 600; }
+.register-right {
+flex: 1.5;
+padding: 50px;
+display: flex;
+flex-direction: column;
+max-height: 90vh;
+overflow-y: auto;
+}
+.register-header {
+text-align: center;
+margin-bottom: 30px;
+}
+.register-header h2 {
+font-size: 1.8rem;
+color: #0e7490;
+margin-bottom: 10px;
+}
+.register-header p {
+color: #64748b;
+font-size: 0.95rem;
+}
+.form-group {
+margin-bottom: 20px;
+}
+.form-group label {
+display: block;
+font-weight: 600;
+font-size: 0.9rem;
+margin-bottom: 8px;
+color: #334155;
+}
+.form-group input, .form-group select {
+width: 100%;
+padding: 14px 16px;
+border: 2px solid #e2e8f0;
+border-radius: 10px;
+font-size: 1rem;
+font-family: inherit;
+transition: border-color 0.3s;
+outline: none;
+background: white;
+}
+.form-group input:focus, .form-group select:focus {
+border-color: #0891b2;
+}
+.form-row {
+display: flex;
+gap: 15px;
+}
+.form-row .form-group { flex: 1; }
+.register-btn {
+width: 100%;
+padding: 16px;
+background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%);
+color: white;
+border: none;
+border-radius: 10px;
+font-size: 1rem;
+font-weight: 700;
+cursor: pointer;
+font-family: inherit;
+transition: all 0.3s;
+box-shadow: 0 10px 25px rgba(8, 145, 178, 0.3);
+margin-top: 10px;
+}
+.register-btn:hover {
+transform: translateY(-2px);
+box-shadow: 0 15px 35px rgba(8, 145, 178, 0.4);
+}
+.register-btn:disabled {
+background: #94a3b8;
+cursor: not-allowed;
+transform: none;
+box-shadow: none;
+}
+.divider {
+display: flex;
+align-items: center;
+margin: 25px 0;
+color: #94a3b8;
+font-size: 0.85rem;
+}
+.divider::before, .divider::after {
+content: '';
+flex: 1;
+height: 1px;
+background: #e2e8f0;
+}
+.divider span { padding: 0 15px; }
+.login-link {
+text-align: center;
+margin-top: 20px;
+font-size: 0.9rem;
+color: #64748b;
+}
+.login-link a {
+color: #0891b2;
+text-decoration: none;
+font-weight: 600;
+}
+.login-link a:hover {
+text-decoration: underline;
+}
+.back-home {
+position: absolute;
+top: 20px;
+left: 20px;
+color: #64748b;
+text-decoration: none;
+font-weight: 600;
+font-size: 0.9rem;
+display: flex;
+align-items: center;
+gap: 8px;
+}
+.back-home:hover { color: #0891b2; }
+.subscription-cards {
+display: grid;
+grid-template-columns: repeat(2, 1fr);
+gap: 12px;
+margin-bottom: 20px;
+}
+.subscription-card {
+border: 2px solid #e2e8f0;
+border-radius: 12px;
+padding: 15px;
+cursor: pointer;
+transition: all 0.3s;
+text-align: center;
+}
+.subscription-card:hover {
+border-color: #0891b2;
+}
+.subscription-card.selected {
+border-color: #0891b2;
+background: #ecfeff;
+}
+.subscription-card h4 {
+font-size: 0.95rem;
+color: #334155;
+margin-bottom: 5px;
+}
+.subscription-card p {
+font-size: 0.8rem;
+color: #64748b;
+margin: 0;
+}
+.subscription-card .price {
+font-size: 1.2rem;
+font-weight: 700;
+color: #0891b2;
+margin: 8px 0;
+}
+.required::after {
+content: ' *';
+color: #ef4444;
+}
+.error-message {
+color: #ef4444;
+font-size: 0.85rem;
+margin-top: 5px;
+display: none;
+}
+.success-message {
+background: #dcfce7;
+color: #166534;
+padding: 15px;
+border-radius: 10px;
+margin-bottom: 20px;
+display: none;
+text-align: center;
+}
+.terms {
+display: flex;
+align-items: flex-start;
+gap: 10px;
+margin: 15px 0;
+}
+.terms input[type="checkbox"] {
+margin-top: 3px;
+}
+.terms label {
+font-size: 0.85rem;
+color: #64748b;
+}
+.terms a {
+color: #0891b2;
+text-decoration: none;
+}
+.password-strength {
+height: 4px;
+background: #e2e8f0;
+border-radius: 2px;
+margin-top: 8px;
+overflow: hidden;
+}
+.password-strength-bar {
+height: 100%;
+width: 0;
+transition: all 0.3s;
+}
+.password-strength-bar.weak { width: 33%; background: #ef4444; }
+.password-strength-bar.medium { width: 66%; background: #f59e0b; }
+.password-strength-bar.strong { width: 100%; background: #22c55e; }
+.role-indicator {
+background: #ecfeff;
+border: 1px solid #0891b2;
+border-radius: 10px;
+padding: 12px 20px;
+margin-bottom: 25px;
+text-align: center;
+color: #0e7490;
+font-weight: 600;
+}
+.role-indicator i {
+margin-right: 8px;
+}
+@media (max-width: 768px) {
+.register-container { flex-direction: column; margin: 10px; }
+.register-left { padding: 40px 30px; }
+.register-right { padding: 40px 30px; }
+.form-row { flex-direction: column; gap: 0; }
+.subscription-cards { grid-template-columns: 1fr; }
+.back-home { position: static; margin-bottom: 20px; }
+body { padding: 0; }
+}
+</style>
+</head>
+<body>
+<a href="accueil.html" class="back-home"><i class="fas fa-arrow-left"></i> Retour à l'Accueil</a>
+<div class="register-container">
+<div class="register-left">
+<h1>Rejoindre DermaFlow AI</h1>
+<p>Créez votre compte et découvrez l'avenir de la dermatologie avec des solutions IA avancées.</p>
+<div class="register-left-features">
+<div class="feature">
+<i class="fas fa-user-shield"></i>
+<span>Création de Compte Sécurisée</span>
+</div>
+<div class="feature">
+<i class="fas fa-bolt"></i>
+<span>Activation Instantanée</span>
+</div>
+<div class="feature">
+<i class="fas fa-credit-card"></i>
+<span>Forfaits Flexibles</span>
+</div>
+<div class="feature">
+<i class="fas fa-headset"></i>
+<span>Support 24/7</span>
+</div>
+</div>
+</div>
+<div class="register-right">
+<div class="register-header">
+<h2>Créer Votre Compte</h2>
+<p id="roleSubtitle">Complétez le formulaire ci-dessous pour commencer</p>
+</div>
+
+<div class="success-message" id="successMessage">
+<i class="fas fa-check-circle"></i> Compte créé avec succès ! Redirection vers la connexion...
+</div>
+
+<div class="role-indicator" id="roleIndicator">
+<i class="fas fa-user"></i> Inscription en tant que : <span id="roleName">Patient</span>
+</div>
+
+<div id="patient-section" class="form-section">
+<form id="patientForm" onsubmit="handleRegister(event, 'patient')">
+<div class="form-row">
+<div class="form-group">
+<label class="required">Prénom</label>
+<input type="text" id="patientFirstName" placeholder="Entrez votre prénom" required>
+</div>
+<div class="form-group">
+<label class="required">Nom</label>
+<input type="text" id="patientLastName" placeholder="Entrez votre nom" required>
+</div>
+</div>
+<div class="form-group">
+<label class="required">Adresse Email</label>
+<input type="email" id="patientEmail" placeholder="Entrez votre email" required>
+</div>
+<div class="form-group">
+<label class="required">Numéro de Téléphone</label>
+<input type="tel" id="patientPhone" placeholder="Entrez votre numéro" required>
+</div>
+<div class="form-group">
+<label class="required">Date de Naissance</label>
+<input type="date" id="patientDOB" required>
+</div>
+<div class="form-row">
+<div class="form-group">
+<label class="required">Mot de Passe</label>
+<input type="password" id="patientPassword" placeholder="Créer un mot de passe" required oninput="checkPasswordStrength(this)">
+<div class="password-strength">
+<div class="password-strength-bar" id="patientPasswordStrength"></div>
+</div>
+</div>
+<div class="form-group">
+<label class="required">Confirmer le Mot de Passe</label>
+<input type="password" id="patientConfirmPassword" placeholder="Confirmer le mot de passe" required>
+</div>
+</div>
+
+<div class="form-group">
+<label>Choisissez Votre Forfait</label>
+<div class="subscription-cards">
+<div class="subscription-card" onclick="selectSubscription(this, 'basic')">
+<h4>Basique</h4>
+<div class="price">Gratuit</div>
+<p>Fonctionnalités essentielles</p>
+</div>
+<div class="subscription-card selected" onclick="selectSubscription(this, 'premium')">
+<h4>Premium</h4>
+<div class="price">9.99€/mois</div>
+<p>Fonctions IA complètes</p>
+</div>
+<div class="subscription-card" onclick="selectSubscription(this, 'family')">
+<h4>Famille</h4>
+<div class="price">19.99€/mois</div>
+<p>Jusqu'à 5 membres</p>
+</div>
+<div class="subscription-card" onclick="selectSubscription(this, 'enterprise')">
+<h4>Entreprise</h4>
+<div class="price">Sur mesure</div>
+<p>Forfaits entreprise</p>
+</div>
+</div>
+</div>
+
+<div class="terms">
+<input type="checkbox" id="patientTerms" required>
+<label>J'accepte les <a href="#">Conditions d'Utilisation</a> et la <a href="#">Politique de Confidentialité</a></label>
+</div>
+
+<button type="submit" class="register-btn">Créer un Compte Patient</button>
+</form>
+</div>
+
+<div id="doctor-section" class="form-section" style="display:none">
+<form id="doctorForm" onsubmit="handleRegister(event, 'doctor')">
+<div class="form-row">
+<div class="form-group">
+<label class="required">Prénom</label>
+<input type="text" id="doctorFirstName" placeholder="Entrez votre prénom" required>
+</div>
+<div class="form-group">
+<label class="required">Nom</label>
+<input type="text" id="doctorLastName" placeholder="Entrez votre nom" required>
+</div>
+</div>
+<div class="form-group">
+<label class="required">Email Professionnel</label>
+<input type="email" id="doctorEmail" placeholder="Entrez votre email professionnel" required>
+</div>
+<div class="form-row">
+<div class="form-group">
+<label class="required">Numéro de Licence Médicale</label>
+<input type="text" id="doctorLicense" placeholder="Entrez le numéro de licence" required>
+</div>
+<div class="form-group">
+<label class="required">Spécialisation</label>
+<select id="doctorSpecialization" required>
+<option value="">Choisir la Spécialisation</option>
+<option value="dermatologie_clinique">Dermatologie Clinique</option>
+<option value="dermato_esthetique">Dermato-Esthétique</option>
+<option value="oncodermatologie">Oncodermatologie</option>
+<option value="trichologie">Trichologie</option>
+<option value="dermato_pediatrique">Dermato-Pédiatrie</option>
+<option value="allergologie">Allergologie</option>
+<option value="dermato_chirurgicale">Dermato-Chirurgicale</option>
+</select>
+</div>
+</div>
+<div class="form-row">
+<div class="form-group">
+<label class="required">Années d'Expérience</label>
+<input type="number" id="doctorExperience" placeholder="Années" min="0" required>
+</div>
+<div class="form-group">
+<label class="required">Numéro de Téléphone</label>
+<input type="tel" id="doctorPhone" placeholder="Entrez votre téléphone" required>
+</div>
+</div>
+<div class="form-row">
+<div class="form-group">
+<label class="required">Mot de Passe</label>
+<input type="password" id="doctorPassword" placeholder="Créer un mot de passe" required oninput="checkPasswordStrength(this)">
+<div class="password-strength">
+<div class="password-strength-bar" id="doctorPasswordStrength"></div>
+</div>
+</div>
+<div class="form-group">
+<label class="required">Confirmer le Mot de Passe</label>
+<input type="password" id="doctorConfirmPassword" placeholder="Confirmer le mot de passe" required>
+</div>
+</div>
+
+<div class="form-group">
+<label>Choisissez Votre Forfait</label>
+<div class="subscription-cards">
+<div class="subscription-card" onclick="selectSubscription(this, 'basic')">
+<h4>Basique</h4>
+<div class="price">Gratuit</div>
+<p>Patients limités</p>
+</div>
+<div class="subscription-card selected" onclick="selectSubscription(this, 'professional')">
+<h4>Professionnel</h4>
+<div class="price">49.99€/mois</div>
+<p>Patients illimités</p>
+</div>
+<div class="subscription-card" onclick="selectSubscription(this, 'premium')">
+<h4>Premium</h4>
+<div class="price">99.99€/mois</div>
+<p>Diagnostics IA</p>
+</div>
+<div class="subscription-card" onclick="selectSubscription(this, 'enterprise')">
+<h4>Entreprise</h4>
+<div class="price">Sur mesure</div>
+<p>Multi-clinic</p>
+</div>
+</div>
+</div>
+
+<div class="terms">
+<input type="checkbox" id="doctorTerms" required>
+<label>J'accepte les <a href="#">Conditions d'Utilisation</a> et la <a href="#">Politique de Confidentialité</a></label>
+</div>
+
+<button type="submit" class="register-btn">Créer un Compte Médecin</button>
+</form>
+</div>
+
+<div id="receptionist-section" class="form-section" style="display:none">
+<form id="receptionistForm" onsubmit="handleRegister(event, 'receptionist')">
+<div class="form-row">
+<div class="form-group">
+<label class="required">Prénom</label>
+<input type="text" id="receptionistFirstName" placeholder="Entrez votre prénom" required>
+</div>
+<div class="form-group">
+<label class="required">Nom</label>
+<input type="text" id="receptionistLastName" placeholder="Entrez votre nom" required>
+</div>
+</div>
+<div class="form-group">
+<label class="required">Adresse Email</label>
+<input type="email" id="receptionistEmail" placeholder="Entrez votre email" required>
+</div>
+<div class="form-row">
+<div class="form-group">
+<label class="required">ID Employé</label>
+<input type="text" id="receptionistEmployeeId" placeholder="Entrez l'ID employé" required>
+</div>
+<div class="form-group">
+<label class="required">Département</label>
+<select id="receptionistDepartment" required>
+<option value="">Choisir le Département</option>
+<option value="accueil">Accueil</option>
+<option value="facturation">Facturation</option>
+<option value="dossiers_medicaux">Dossiers Médicaux</option>
+<option value="planning">Planning</option>
+</select>
+</div>
+</div>
+<div class="form-row">
+<div class="form-group">
+<label class="required">Numéro de Téléphone</label>
+<input type="tel" id="receptionistPhone" placeholder="Entrez votre téléphone" required>
+</div>
+<div class="form-group">
+<label>Horaire Préféré</label>
+<select id="receptionistShift">
+<option value="morning">Matin (8h-16h)</option>
+<option value="evening">Après-midi (16h-00h)</option>
+<option value="night">Nuit (00h-8h)</option>
+<option value="rotating">Rotatif</option>
+</select>
+</div>
+</div>
+<div class="form-row">
+<div class="form-group">
+<label class="required">Mot de Passe</label>
+<input type="password" id="receptionistPassword" placeholder="Créer un mot de passe" required oninput="checkPasswordStrength(this)">
+<div class="password-strength">
+<div class="password-strength-bar" id="receptionistPasswordStrength"></div>
+</div>
+</div>
+<div class="form-group">
+<label class="required">Confirmer le Mot de Passe</label>
+<input type="password" id="receptionistConfirmPassword" placeholder="Confirmer le mot de passe" required>
+</div>
+</div>
+
+<div class="form-group">
+<label>Choisissez Votre Forfait</label>
+<div class="subscription-cards">
+<div class="subscription-card" onclick="selectSubscription(this, 'basic')">
+<h4>Basique</h4>
+<div class="price">Gratuit</div>
+<p>Utilisateur unique</p>
+</div>
+<div class="subscription-card selected" onclick="selectSubscription(this, 'professional')">
+<h4>Professionnel</h4>
+<div class="price">29.99€/mois</div>
+<p>Accès complet</p>
+</div>
+<div class="subscription-card" onclick="selectSubscription(this, 'team')">
+<h4>Équipe</h4>
+<div class="price">79.99€/mois</div>
+<p>5 membres du personnel</p>
+</div>
+<div class="subscription-card" onclick="selectSubscription(this, 'enterprise')">
+<h4>Entreprise</h4>
+<div class="price">Sur mesure</div>
+<p>Clinic complet</p>
+</div>
+</div>
+</div>
+
+<div class="terms">
+<input type="checkbox" id="receptionistTerms" required>
+<label>J'accepte les <a href="#">Conditions d'Utilisation</a> et la <a href="#">Politique de Confidentialité</a></label>
+</div>
+
+<button type="submit" class="register-btn">Créer un Compte Réception</button>
+</form>
+</div>
+
+<div id="admin-section" class="form-section" style="display:none">
+<form id="adminForm" onsubmit="handleRegister(event, 'admin')">
+<div class="form-row">
+<div class="form-group">
+<label class="required">Prénom</label>
+<input type="text" id="adminFirstName" placeholder="Entrez votre prénom" required>
+</div>
+<div class="form-group">
+<label class="required">Nom</label>
+<input type="text" id="adminLastName" placeholder="Entrez votre nom" required>
+</div>
+</div>
+<div class="form-group">
+<label class="required">Email Admin</label>
+<input type="email" id="adminEmail" placeholder="Entrez l'email admin" required>
+</div>
+<div class="form-row">
+<div class="form-group">
+<label class="required">Code Admin</label>
+<input type="text" id="adminCode" placeholder="Entrez le code d'autorisation" required>
+</div>
+<div class="form-group">
+<label class="required">Niveau Admin</label>
+<select id="adminLevel" required>
+<option value="">Choisir le Niveau</option>
+<option value="super">Super Admin</option>
+<option value="manager">Manager</option>
+<option value="support">Support</option>
+</select>
+</div>
+</div>
+<div class="form-group">
+<label class="required">Numéro de Téléphone</label>
+<input type="tel" id="adminPhone" placeholder="Entrez votre numéro" required>
+</div>
+<div class="form-row">
+<div class="form-group">
+<label class="required">Mot de Passe</label>
+<input type="password" id="adminPassword" placeholder="Créer un mot de passe" required oninput="checkPasswordStrength(this)">
+<div class="password-strength">
+<div class="password-strength-bar" id="adminPasswordStrength"></div>
+</div>
+</div>
+<div class="form-group">
+<label class="required">Confirmer le Mot de Passe</label>
+<input type="password" id="adminConfirmPassword" placeholder="Confirmer le mot de passe" required>
+</div>
+</div>
+
+<div class="form-group">
+<label>Choisissez Votre Forfait</label>
+<div class="subscription-cards">
+<div class="subscription-card" onclick="selectSubscription(this, 'basic')">
+<h4>Basique</h4>
+<div class="price">Gratuit</div>
+<p>Clinic unique</p>
+</div>
+<div class="subscription-card selected" onclick="selectSubscription(this, 'professional')">
+<h4>Professionnel</h4>
+<div class="price">199.99€/mois</div>
+<p>Multi-clinic</p>
+</div>
+<div class="subscription-card" onclick="selectSubscription(this, 'enterprise')">
+<h4>Entreprise</h4>
+<div class="price">499.99€/mois</div>
+<p>Réseau d'hôpitaux</p>
+</div>
+<div class="subscription-card" onclick="selectSubscription(this, 'custom')">
+<h4>Sur mesure</h4>
+<div class="price">Contactez-nous</div>
+<p>Solution adaptée</p>
+</div>
+</div>
+</div>
+
+<div class="terms">
+<input type="checkbox" id="adminTerms" required>
+<label>J'accepte les <a href="#">Conditions d'Utilisation</a> et la <a href="#">Politique de Confidentialité</a></label>
+</div>
+
+<button type="submit" class="register-btn">Créer un Compte Admin</button>
+</form>
+</div>
+
+<div class="divider">
+<span>OU</span>
+</div>
+
+<div class="login-link">
+Vous avez déjà un compte ? <a href="connexion.html">Se Connecter</a>
+</div>
+</div>
+</div>
+
+<script>
+let selectedSubscriptions = {
+    patient: 'premium',
+    doctor: 'professional',
+    receptionist: 'professional',
+    admin: 'professional'
+};
+
+const roleConfig = {
+    patient: {
+        name: 'Patient',
+        icon: 'fa-user',
+        defaultPlan: 'premium'
+    },
+    doctor: {
+        name: 'Médecin',
+        icon: 'fa-user-md',
+        defaultPlan: 'professional'
+    },
+    receptionist: {
+        name: 'Réception',
+        icon: 'fa-user-clock',
+        defaultPlan: 'professional'
+    },
+    admin: {
+        name: 'Administrateur',
+        icon: 'fa-user-shield',
+        defaultPlan: 'professional'
+    }
+};
+
+document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const role = urlParams.get('role') || 'patient';
+    const validRoles = ['patient', 'doctor', 'receptionist', 'admin'];
+    const currentRole = validRoles.includes(role) ? role : 'patient';
+    showRoleForm(currentRole);
+});
+
+function showRoleForm(role) {
+    document.querySelectorAll('.form-section').forEach(section => {
+        section.style.display = 'none';
+    });
+    const selectedSection = document.getElementById(role + '-section');
+    if (selectedSection) {
+        selectedSection.style.display = 'block';
+    }
+    const config = roleConfig[role];
+    document.getElementById('roleName').textContent = config.name;
+    document.getElementById('roleIndicator').innerHTML = `<i class="fas ${config.icon}"></i> Inscription en tant que : ${config.name}`;
+    document.title = `Créer un Compte ${config.name} - DermaFlow AI`;
+}
+
+function selectSubscription(card, plan) {
+    const container = card.closest('.subscription-cards');
+    const roleSection = container.closest('.form-section');
+    const role = roleSection.id.replace('-section', '');
+    container.querySelectorAll('.subscription-card').forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+    selectedSubscriptions[role] = plan;
+}
+
+function checkPasswordStrength(input) {
+    const password = input.value;
+    const role = input.id.replace('Password', '');
+    const strengthBar = document.getElementById(role + 'PasswordStrength');
+    let strength = 0;
+    if (password.length > 5) strength++;
+    if (password.length > 8) strength++;
+    if (/[A-Z]/.test(password)) strength++;
+    if (/[0-9]/.test(password)) strength++;
+    if (/[^A-Za-z0-9]/.test(password)) strength++;
+    strengthBar.className = 'password-strength-bar';
+    if (strength < 2) {
+        strengthBar.classList.add('weak');
+    } else if (strength < 4) {
+        strengthBar.classList.add('medium');
+    } else {
+        strengthBar.classList.add('strong');
+    }
+}
+
+const API_BASE = 'http://localhost:8000';
+
+async function handleRegister(event, role) {
+    event.preventDefault();
+    const passwordField = document.getElementById(role + 'Password');
+    const confirmField = document.getElementById(role + 'ConfirmPassword');
+    if (passwordField.value !== confirmField.value) {
+        alert('Les mots de passe ne correspondent pas !');
+        return;
+    }
+    if (passwordField.value.length < 6) {
+        alert('Le mot de passe doit contenir au moins 6 caractères !');
+        return;
+    }
+    const btn = event.target.querySelector('.register-btn');
+    btn.disabled = true;
+    btn.textContent = 'Création du Compte...';
+    const formData = {
+        role: role,
+        subscription: selectedSubscriptions[role],
+        first_name: document.getElementById(role + 'FirstName').value,
+        last_name: document.getElementById(role + 'LastName').value,
+        email: document.getElementById(role + 'Email').value,
+        phone: document.getElementById(role + 'Phone').value,
+        password: passwordField.value,
+    };
+    if (role === 'patient') {
+        formData.date_of_birth = document.getElementById('patientDOB').value;
+    } else if (role === 'doctor') {
+        formData.medical_license = document.getElementById('doctorLicense').value;
+        formData.specialization = document.getElementById('doctorSpecialization').value;
+        formData.years_of_experience = parseInt(document.getElementById('doctorExperience').value) || 0;
+    } else if (role === 'receptionist') {
+        formData.employee_id = document.getElementById('receptionistEmployeeId').value;
+        formData.department = document.getElementById('receptionistDepartment').value;
+        formData.shift = document.getElementById('receptionistShift').value;
+    } else if (role === 'admin') {
+        formData.admin_code = document.getElementById('adminCode').value;
+        formData.admin_level = document.getElementById('adminLevel').value;
+    }
+    try {
+        const response = await fetch(API_BASE + '/auth/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData),
+        });
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(data.detail || 'Échec de l\'inscription');
+        }
+        localStorage.setItem('access_token', data.access_token);
+        localStorage.setItem('user_id', data.user_id);
+        localStorage.setItem('role', data.role);
+        localStorage.setItem('first_name', data.first_name);
+        localStorage.setItem('last_name', data.last_name);
+        localStorage.setItem('email', data.email);
+        const successMsg = document.getElementById('successMessage');
+        successMsg.style.display = 'block';
+        const dashboardMap = {
+            patient: 'tableau_bord_patient.html',
+            doctor: 'tableau_bord_dermatologue.html',
+            receptionist: 'tableau_bord_reception.html',
+            admin: 'tableau_bord_admin.html',
+        };
+        setTimeout(() => {
+            window.location.href = dashboardMap[role] || 'connexion.html';
+        }, 1500);
+    } catch (error) {
+        alert(error.message);
+        btn.disabled = false;
+        btn.textContent = 'Créer un Compte ' + roleConfig[role].name;
+    }
+}
+</script>
+</body>
+</html>
+</code>

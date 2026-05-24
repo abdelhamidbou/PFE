@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion - DermaFlow AI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #ecfeff 0%, #ffffff 50%, #e0f2fe 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #334155;
+        }
+        .login-container {
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 25px 80px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 1000px;
+            display: flex;
+            overflow: hidden;
+        }
+        .login-left {
+            flex: 1.2;
+            background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%);
+            padding: 60px 50px;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .login-left h1 {
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+        .login-left p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            line-height: 1.7;
+            margin-bottom: 40px;
+        }
+        .login-left-features {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .feature {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .feature i {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+        .feature span { font-weight: 600; }
+        .login-right {
+            flex: 1;
+            padding: 60px 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .login-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 40px;
+            background: #f1f5f9;
+            border-radius: 12px;
+            padding: 5px;
+        }
+        .tab {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #64748b;
+        }
+        .tab.active {
+            background: white;
+            color: #0891b2;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .form-group {
+            margin-bottom: 25px;
+        }
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            color: #334155;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: border-color 0.3s;
+            outline: none;
+        }
+        .form-group input:focus, .form-group select:focus {
+            border-color: #0891b2;
+        }
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+        .form-row .form-group { flex: 1; }
+        .login-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.3s;
+            box-shadow: 0 10px 25px rgba(8, 145, 178, 0.3);
+        }
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 35px rgba(8, 145, 178, 0.4);
+        }
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 25px 0;
+            color: #94a3b8;
+            font-size: 0.85rem;
+        }
+        .divider::before, .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #e2e8f0;
+        }
+        .divider span { padding: 0 15px; }
+        .forgot {
+            text-align: center;
+            margin-top: 25px;
+            font-size: 0.9rem;
+        }
+        .forgot a {
+            color: #0891b2;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .back-home {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: #64748b;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .back-home:hover { color: #0891b2; }
+        .role-section { display: none; }
+        .role-section.active { display: block; }
+        @media (max-width: 768px) {
+            .login-container { flex-direction: column; margin: 20px; }
+            .login-left { padding: 40px 30px; }
+            .login-right { padding: 40px 30px; }
+            .back-home { position: static; margin-bottom: 20px; padding: 0 20px; }
+            body { padding: 0; }
+        }
+    </style>
+</head>
+<body>
+    <a href="accueil.html" class="back-home"><i class="fas fa-arrow-left"></i> Retour à l'Accueil</a>
+    <div class="login-container">
+        <div class="login-left">
+            <h1>Bienvenue sur DermaFlow AI</h1>
+            <p>Accédez à votre portail dermatologique personnalisé. Sélectionnez votre rôle pour vous connecter en toute sécurité.</p>
+            <div class="login-left-features">
+                <div class="feature">
+                    <i class="fas fa-lock"></i>
+                    <span>Sécurité des Données Médicales</span>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-clock"></i>
+                    <span>Accès 24/7 à vos Dossiers</span>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-calendar-check"></i>
+                    <span>Réservation Instantanée de RDV</span>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-heartbeat"></i>
+                    <span>Diagnostic IA Avancé</span>
+                </div>
+            </div>
+        </div>
+        <div class="login-right">
+            <div class="login-tabs">
+                <div class="tab active" onclick="switchTab('patient')">Patient</div>
+                <div class="tab" onclick="switchTab('doctor')">Médecin</div>
+                <div class="tab" onclick="switchTab('receptionist')">Réception</div>
+                <div class="tab" onclick="switchTab('admin')">Admin</div>
+            </div>
+
+            <div id="patient-form" class="role-section active">
+                <div class="form-group">
+                    <label>Adresse Email</label>
+                    <input type="email" id="patientEmail" placeholder="Entrez votre email">
+                </div>
+                <div class="form-group">
+                    <label>Mot de Passe</label>
+                    <input type="password" id="patientPassword" placeholder="Entrez votre mot de passe">
+                </div>
+                <button class="login-btn" onclick="handleLogin('patient')">Se Connecter comme Patient</button>
+                <div class="forgot">
+                    <a href="#">Mot de passe oublié ?</a> | <a href="inscription.html?role=patient">Créer un Compte</a>
+                </div>
+            </div>
+
+            <div id="doctor-form" class="role-section">
+                <div class="form-group">
+                    <label>Email du Médecin</label>
+                    <input type="email" id="doctorEmail" placeholder="Entrez votre email">
+                </div>
+                <div class="form-group">
+                    <label>Mot de Passe</label>
+                    <input type="password" id="doctorPassword" placeholder="Entrez votre mot de passe">
+                </div>
+                <button class="login-btn" onclick="handleLogin('doctor')">Se Connecter comme Médecin</button>
+                <div class="forgot">
+                    <a href="#">Mot de passe oublié ?</a> | <a href="inscription.html?role=doctor">Créer un Compte</a>
+                </div>
+            </div>
+
+            <div id="admin-form" class="role-section">
+                <div class="form-group">
+                    <label>Email Admin</label>
+                    <input type="email" id="adminEmail" placeholder="Entrez votre email">
+                </div>
+                <div class="form-group">
+                    <label>Mot de Passe</label>
+                    <input type="password" id="adminPassword" placeholder="Entrez votre mot de passe">
+                </div>
+                <button class="login-btn" onclick="handleLogin('admin')">Se Connecter comme Admin</button>
+                <div class="forgot">
+                    <a href="#">Mot de passe oublié ?</a> | <a href="inscription.html?role=admin">Créer un Compte</a>
+                </div>
+            </div>
+
+            <div id="receptionist-form" class="role-section">
+                <div class="form-group">
+                    <label>Email du Personnel</label>
+                    <input type="email" id="receptionistEmail" placeholder="Entrez votre email">
+                </div>
+                <div class="form-group">
+                    <label>Mot de Passe</label>
+                    <input type="password" id="receptionistPassword" placeholder="Entrez votre mot de passe">
+                </div>
+                <button class="login-btn" onclick="handleLogin('receptionist')">Se Connecter comme Réception</button>
+                <div class="forgot">
+                    <a href="#">Mot de passe oublié ?</a> | <a href="inscription.html?role=receptionist">Créer un Compte</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8000';
+
+        function switchTab(role) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.role-section').forEach(s => s.classList.remove('active'));
+            document.querySelector(`[onclick="switchTab('${role}')"]`).classList.add('active');
+            document.getElementById(`${role}-form`).classList.add('active');
+        }
+
+        async function handleLogin(role) {
+            const email = document.getElementById(role + 'Email').value.trim();
+            const password = document.getElementById(role + 'Password').value;
+
+            if (!email || !password) {
+                alert('Veuillez entrer votre email et mot de passe.');
+                return;
+            }
+
+            const btn = document.querySelector(`#${role}-form .login-btn`);
+            const originalText = btn.textContent;
+            btn.disabled = true;
+            btn.textContent = 'Connexion en cours...';
+
+            try {
+                const response = await fetch(API_BASE + '/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: email, password: password, role: role }),
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.detail || 'Échec de la connexion');
+                }
+
+                localStorage.setItem('access_token', data.access_token);
+                localStorage.setItem('user_id', data.user_id);
+                localStorage.setItem('role', data.role);
+                localStorage.setItem('first_name', data.first_name);
+                localStorage.setItem('last_name', data.last_name);
+                localStorage.setItem('email', data.email);
+
+                const dashboardMap = {
+                    patient: 'tableau_bord_patient.html',
+                    doctor: 'tableau_bord_dermatologue.html',
+                    receptionist: 'tableau_bord_reception.html',
+                    admin: 'tableau_bord_admin.html',
+                };
+
+                window.location.href = dashboardMap[role] || 'connexion.html';
+            } catch (error) {
+                alert(error.message);
+                btn.disabled = false;
+                btn.textContent = originalText;
+            }
+        }
+    </script>
+</body>
+</html>
+</code>

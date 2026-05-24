@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portail Patient - DermaFlow AI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #0891b2;
+            --primary-dark: #0e7490;
+            --primary-light: #cffafe;
+            --btn-blue: #0891b2;
+            --btn-green: #10b981;
+            --light-bg: #f8fafc;
+            --border-color: #e2e8f0;
+            --text-dark: #334155;
+            --urgent-bg: #fff5f5;
+            --urgent-text: #c53030;
+        }
+
+        body { font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif; background-color: var(--light-bg); margin: 0; color: var(--text-dark); }
+
+        header { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white; padding: 20px 10%; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .user-profile { display: flex; align-items: center; gap: 15px; }
+        .user-profile img { width: 65px; border-radius: 50%; border: 2px solid white; }
+
+        nav { background: white; display: flex; justify-content: center; gap: 40px; padding: 15px 0; border-bottom: 1px solid var(--border-color); box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .tab { cursor: pointer; font-weight: 600; color: #64748b; padding-bottom: 5px; transition: 0.3s; }
+        .tab.active { color: var(--primary); border-bottom: 3px solid var(--primary); }
+
+        .container { width: 90%; max-width: 1100px; margin: 30px auto; display: none; animation: fadeIn 0.4s; }
+        .container.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .card { background: white; border-radius: 12px; border: 1px solid var(--border-color); padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); margin-bottom: 20px; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px; }
+        .card-header h3 { margin: 0; color: var(--primary); font-size: 1.1rem; }
+
+        .btn-action { padding: 8px 15px; border-radius: 6px; border: none; font-weight: bold; cursor: pointer; color: white; }
+        .btn-blue { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); }
+        .btn-blue:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(8, 145, 178, 0.3); }
+        .btn-green { background: var(--btn-green); }
+
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .sub-box { background: #f8fafc; border: 1px solid #edf2f7; border-radius: 8px; padding: 12px; }
+        .waiting-number { font-size: 3rem; font-weight: 800; color: #1e293b; margin: 10px 0; }
+
+        .chat-messages { height: 300px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding: 10px; background: #fafafa; border-radius: 8px; }
+        .msg { max-width: 80%; padding: 10px; border-radius: 10px; font-size: 0.9rem; }
+        .msg-dr { align-self: flex-start; background: #e2e8f0; }
+        .msg-user { align-self: flex-end; background: var(--primary); color: white; }
+
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; font-weight: 600; color: var(--text-dark); margin-bottom: 6px; font-size: 0.9rem; }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%; padding: 10px 12px; border: 1px solid var(--border-color); border-radius: 8px;
+            font-size: 0.95rem; box-sizing: border-box; transition: border-color 0.2s; font-family: inherit;
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(8, 145, 178, 0.15);
+        }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .form-actions { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
+        .form-actions .btn-action { padding: 10px 20px; }
+        .modal-form { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-form.active { display: flex; }
+        .modal-form .card { max-width: 500px; width: 90%; max-height: 90vh; overflow-y: auto; }
+        .form-error { font-size: 0.8rem; color: var(--urgent-text); margin-top: 4px; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="user-profile">
+        <img src="https://i.pravatar.cc/150?u=ahmed" alt="Patient">
+        <div>
+            <h2 style="margin:0">Ahmed El Mansouri</h2>
+            <small>45 ans | ahmed.mansouri@gmail.com</small>
+        </div>
+    </div>
+    <button class="btn-action" style="background:none; border: 1px solid white;">Déconnexion</button>
+</header>
+
+<nav>
+    <div class="tab active" onclick="switchTab('rdv', this)">Mes Rendez-vous</div>
+    <div class="tab" onclick="switchTab('dossier', this)">Mon Dossier Médical</div>
+    <div class="tab" onclick="switchTab('msg', this)">Messages</div>
+</nav>
+
+<div id="rdv" class="container active">
+    <div style="background: var(--urgent-bg); color: var(--urgent-text); border: 1px solid #fed7d7; padding: 12px; border-radius: 8px; margin-bottom: 20px;">
+        <i class="fas fa-exclamation-triangle"></i> <b>Urgence :</b> Un cas urgent est en cours de traitement. L'attente peut être plus longue.
+    </div>
+
+    <div class="grid-2">
+        <div class="card">
+            <div class="card-header"><h3>Mon Prochain Rendez-vous</h3></div>
+            <div style="display:flex; align-items:center; gap:12px; margin-bottom:15px;">
+                <img src="https://i.pravatar.cc/150?u=dr" style="width:50px; border-radius:50%;">
+                <div><strong>Dr. Karim Bennani</strong><br><small>Dermatologue Clinique</small></div>
+            </div>
+            <div style="text-align:center; padding:15px; background:#fcfcfc; border-radius:8px; border:1px solid #eee;">
+                <div>Mercredi 15 Juin 2024</div>
+                <div style="font-size:1.6rem; font-weight:bold;">10:30</div>
+            </div>
+            <button class="btn-action btn-blue" style="width:100%; margin-top:15px;">Voir Détails ></button>
+        </div>
+
+        <div class="card" style="text-align:center;">
+            <div class="card-header"><h3 style="text-align:left;">Temps d'Attente Actuel</h3></div>
+            <p style="color:#64748b; margin-top:20px;">Temps d'Attente Estimé:</p>
+            <div class="waiting-number">18 <span style="font-size:1.2rem;">min</span></div>
+            <p style="font-weight:500;">Votre tour approche ! ⏳</p>
+        </div>
+
+        <div class="card">
+            <div class="card-header"><h3>File d'attente</h3></div>
+            <div style="text-align:center; padding: 10px;">
+                <p style="color:#64748b;">Nombre de patients avant vous :</p>
+                <div style="font-size: 2.5rem; font-weight: bold; color: var(--btn-green);">03</div>
+                <small>Estimation : ~6 min par patient</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="dossier" class="container">
+    <div class="card">
+        <div class="card-header"><h3>Mon Dossier Médical</h3></div>
+        <div style="text-align:center; padding:40px; color:#64748b;">
+            <i class="fas fa-folder-medical" style="font-size:3rem; color:#e2e8f0; margin-bottom:15px;"></i>
+            <p>Votre dossier médical est accessible via votre dermatologue traitant.</p>
+            <p style="font-size:0.9rem; margin-top:10px;">Contactez le cabinet pour plus d'informations.</p>
+        </div>
+    </div>
+</div>
+
+<div id="msg" class="container">
+    <div class="card">
+        <div class="card-header"><h3>Messages</h3></div>
+        <div class="chat-messages" id="chatMessages">
+            <div class="msg msg-dr">Bonjour Ahmed, comment va votre peau après le traitement ?</div>
+            <div class="msg msg-user">Bonjour Docteur, elle est beaucoup mieux. Les rougeurs ont diminué.</div>
+        </div>
+        <form id="formMessage" class="form-message">
+            <div class="form-group" style="margin-bottom:0;">
+                <label for="messageText">Nouveau message</label>
+                <div style="display:flex; gap:10px;">
+                    <input type="text" id="messageText" name="message" placeholder="Écrivez votre message..." required style="flex:1;">
+                    <button type="submit" class="btn-action btn-blue">Envoyer</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="modalDossier" class="modal-form">
+    <div class="card">
+        <div class="card-header"><h3>Modifier le résumé médical</h3> <button class="btn-action" style="background:#64748b;" onclick="closeModalDossier()">Fermer</button></div>
+        <form id="formDossier">
+            <div class="form-group">
+                <label for="allergies">Allergies connues</label>
+                <input type="text" id="allergies" name="allergies" placeholder="ex: Parabènes, Nickel" value="Nickel">
+            </div>
+            <div class="form-group">
+                <label for="conditions">Conditions / Antécédents</label>
+                <input type="text" id="conditions" name="conditions" placeholder="ex: Eczéma, Psoriasis" value="Eczéma sévère">
+            </div>
+            <div class="form-group">
+                <label for="traitements">Traitements en cours</label>
+                <input type="text" id="traitements" name="traitements" placeholder="ex: Corticostéroïdes" value="Hydrocortisone 1%">
+            </div>
+            <div class="form-group">
+                <label for="groupeSanguin">Groupe sanguin</label>
+                <select id="groupeSanguin" name="groupeSanguin">
+                    <option value="O+">O+</option>
+                    <option value="O-">O-</option>
+                    <option value="A+">A+</option>
+                    <option value="A-">A-</option>
+                    <option value="B+">B+</option>
+                    <option value="B-">B-</option>
+                    <option value="AB+">AB+</option>
+                    <option value="AB-">AB-</option>
+                </select>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn-action btn-green">Enregistrer</button>
+                <button type="button" class="btn-action" style="background:#64748b;" onclick="closeModalDossier()">Annuler</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function switchTab(tabId, el) {
+        document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        el.classList.add('active');
+    }
+    function openModalDossier() { document.getElementById('modalDossier').classList.add('active'); }
+    function closeModalDossier() { document.getElementById('modalDossier').classList.remove('active'); }
+    document.getElementById('formDossier').addEventListener('submit', function(e) {
+        e.preventDefault();
+        document.getElementById('dispAllergies').textContent = document.getElementById('allergies').value || '—';
+        document.getElementById('dispConditions').textContent = document.getElementById('conditions').value || '—';
+        document.getElementById('dispTraitements').textContent = document.getElementById('traitements').value || '—';
+        document.getElementById('dispGroupe').textContent = document.getElementById('groupeSanguin').value;
+        closeModalDossier();
+    });
+    document.getElementById('formMessage').addEventListener('submit', function(e) {
+        e.preventDefault();
+        var txt = document.getElementById('messageText');
+        if (!txt.value.trim()) return;
+        var div = document.createElement('div');
+        div.className = 'msg msg-user';
+        div.textContent = txt.value;
+        document.getElementById('chatMessages').appendChild(div);
+        txt.value = '';
+        document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
+    });
+</script>
+
+</body>
+</html>
+</code>
