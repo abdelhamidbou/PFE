@@ -292,7 +292,7 @@
             font-size: 1.5rem;
             box-shadow: 0 10px 30px rgba(8, 145, 178, 0.4);
             transition: all 0.3s;
-            z-index: 9999;
+            z-index: 9997;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -328,10 +328,91 @@
             opacity: 0;
             transform: translateY(10px);
             transition: all 0.3s;
-            z-index: 9998;
+            z-index: 9996;
             pointer-events: none;
         }
-        .chatbot-float:hover + .chatbot-label, .chatbot-label:hover { opacity: 1; transform: translateY(0); }
+
+        /* Chatbot Widget Popup */
+        .chat-widget {
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            width: 380px;
+            max-height: 600px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 25px 80px rgba(0,0,0,0.15);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            z-index: 9999;
+            border: 1px solid var(--border-color);
+        }
+        .chat-widget.active { display: flex; }
+        .chat-widget-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+        }
+        .chat-widget-avatar {
+            width: 40px; height: 40px; border-radius: 50%;
+            background: rgba(255,255,255,0.2); display: flex;
+            align-items: center; justify-content: center; font-size: 1.2rem;
+        }
+        .chat-widget-title { flex: 1; }
+        .chat-widget-title h4 { margin: 0; font-size: 0.95rem; }
+        .chat-widget-title p { margin: 0; font-size: 0.75rem; opacity: 0.9; }
+        .chat-widget-close {
+            background: none; border: none; color: white; font-size: 1.2rem;
+            cursor: pointer; padding: 4px;
+        }
+        .chat-widget-messages {
+            height: 350px; overflow-y: auto; padding: 15px;
+            display: flex; flex-direction: column; gap: 10px;
+            background: #f8fafc;
+        }
+        .chat-msg { max-width: 80%; padding: 10px 14px; border-radius: 12px; font-size: 0.85rem; line-height: 1.4; }
+        .chat-msg-ai { align-self: flex-start; background: white; border: 1px solid #e2e8f0; color: #334155; }
+        .chat-msg-user { align-self: flex-end; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white; }
+        .chat-msg-time { font-size: 0.7rem; opacity: 0.6; margin-top: 4px; display: block; }
+        .chat-widget-input {
+            display: flex; gap: 8px; padding: 12px 15px;
+            border-top: 1px solid #e2e8f0; background: white;
+        }
+        .chat-widget-input input {
+            flex: 1; padding: 10px 14px; border: 2px solid #e2e8f0;
+            border-radius: 20px; font-family: inherit; font-size: 0.9rem; outline: none;
+        }
+        .chat-widget-input input:focus { border-color: var(--primary); }
+        .chat-widget-input button {
+            width: 40px; height: 40px; border-radius: 50%; border: none;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white; font-size: 1rem; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .typing-dots { display: flex; gap: 4px; padding: 10px 14px; align-self: flex-start; background: white; border: 1px solid #e2e8f0; border-radius: 12px; }
+        .typing-dots span { width: 6px; height: 6px; background: var(--primary); border-radius: 50%; animation: typing-bounce 1.4s infinite; }
+        .typing-dots span:nth-child(1) { animation-delay: 0s; }
+        .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes typing-bounce {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-6px); }
+        }
+        .quick-actions-bar { display: flex; gap: 6px; padding: 8px 15px; background: white; border-top: 1px solid #e2e8f0; overflow-x: auto; }
+        .quick-actions-bar button {
+            background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 12px;
+            padding: 4px 10px; font-size: 0.75rem; cursor: pointer; white-space: nowrap; transition: 0.2s;
+        }
+        .quick-actions-bar button:hover { background: var(--primary-light); border-color: var(--primary); color: var(--primary-dark); }
+
+        @media (max-width: 768px) {
+            .chat-widget { width: 90%; right: 5%; left: 5%; bottom: 100px; }
+        }
 
         @media (max-width: 1024px) {
             .hero h1 { font-size: 3rem; }
@@ -693,10 +774,130 @@
         </div>
     </footer>
 
-    <a href="assistant.html" class="chatbot-float" title="Discuter avec notre Assistant IA">
+    <!-- Floating Chatbot Button -->
+    <button class="chatbot-float" id="chatToggle" title="Discuter avec notre Assistant IA">
         <i class="fas fa-robot"></i>
-    </a>
-    <div class="chatbot-label">Besoin d'aide ? 🤖</div>
+    </button>
+
+    <!-- Chat Widget Popup -->
+    <div class="chat-widget" id="chatWidget">
+        <div class="chat-widget-header">
+            <div class="chat-widget-avatar"><i class="fas fa-robot"></i></div>
+            <div class="chat-widget-title">
+                <h4>Assistant IA DermaFlow</h4>
+                <p>En ligne - Prêt à vous aider</p>
+            </div>
+            <button class="chat-widget-close" id="chatClose"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="chat-widget-messages" id="chatWidgetMessages">
+            <div class="chat-msg chat-msg-ai">
+                <b>Bonjour !</b><br>
+                Je suis l'assistant IA de DermaFlow. Je peux vous aider avec :
+                <ul style="margin:8px 0; padding-left:16px; font-size:0.8rem;">
+                    <li>La prise de rendez-vous</li>
+                    <li>Les informations sur nos services</li>
+                    <li>Les symptômes et conseils généraux</li>
+                    <li>La localisation du cabinet</li>
+                </ul>
+                Comment puis-je vous aider aujourd'hui ?
+                <span class="chat-msg-time">À l'instant</span>
+            </div>
+        </div>
+        <div class="quick-actions-bar">
+            <button onclick="sendQuick('Je veux prendre un rendez-vous')">Prendre RDV</button>
+            <button onclick="sendQuick('Quels sont vos horaires ?')">Horaires</button>
+            <button onclick="sendQuick('Où se trouve le cabinet ?')">Localisation</button>
+            <button onclick="sendQuick('Parlez-moi de vos services')">Services</button>
+            <button onclick="sendQuick('Urgence médicale')">Urgence</button>
+        </div>
+        <div class="chat-widget-input">
+            <input type="text" id="chatInputField" placeholder="Écrivez votre message..." onkeypress="if(event.key==='Enter') sendChatMessage()">
+            <button onclick="sendChatMessage()"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+
+    <script>
+        // Chatbot Widget Functions
+        const chatWidget = document.getElementById('chatWidget');
+        const chatToggle = document.getElementById('chatToggle');
+        const chatClose = document.getElementById('chatClose');
+        const chatWidgetMessages = document.getElementById('chatWidgetMessages');
+        const chatInputField = document.getElementById('chatInputField');
+
+        chatToggle.addEventListener('click', () => {
+            chatWidget.classList.add('active');
+            chatToggle.style.display = 'none';
+        });
+        chatClose.addEventListener('click', () => {
+            chatWidget.classList.remove('active');
+            chatToggle.style.display = 'flex';
+        });
+
+        function addChatMsg(text, isUser) {
+            const div = document.createElement('div');
+            div.className = 'chat-msg ' + (isUser ? 'chat-msg-user' : 'chat-msg-ai');
+            const time = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+            div.innerHTML = text + '<span class="chat-msg-time">' + time + '</span>';
+            chatWidgetMessages.appendChild(div);
+            chatWidgetMessages.scrollTop = chatWidgetMessages.scrollHeight;
+        }
+
+        function showTyping() {
+            const dots = document.createElement('div');
+            dots.className = 'typing-dots';
+            dots.id = 'typingIndicator';
+            dots.innerHTML = '<span></span><span></span><span></span>';
+            chatWidgetMessages.appendChild(dots);
+            chatWidgetMessages.scrollTop = chatWidgetMessages.scrollHeight;
+        }
+        function hideTyping() {
+            const el = document.getElementById('typingIndicator');
+            if (el) el.remove();
+        }
+
+        function getAIResponse(msg) {
+            const lower = msg.toLowerCase();
+            if (lower.includes('rendez-vous') || lower.includes('rdv')) {
+                return "Pour prendre un rendez-vous, vous pouvez vous connecter à votre espace patient <a href='connexion.html' style='color:var(--primary);'>ici</a> ou appeler directement au 05XX-XXXXXX.";
+            }
+            if (lower.includes('horaire') || lower.includes('ouvert')) {
+                return "<b>Nos horaires :</b><br>Lundi - Vendredi : 8h00 - 20h00<br>Samedi : 9h00 - 14h00<br>Dimanche : Fermé<br>Urgences : 24/7";
+            }
+            if (lower.includes('localisation') || lower.includes('adresse') || lower.includes('où')) {
+                return "<b>DermaFlow AI</b> - 123 Boulevard de la Dermatologie, Casablanca, Maroc. Parking gratuit.";
+            }
+            if (lower.includes('service') || lower.includes('spécialité')) {
+                return "<b>Nos services :</b><br>• Dermatologie Clinique<br>• Dermato-Esthétique<br>• Oncodermatologie<br>• Trichologie<br>• Allergologie Cutanée";
+            }
+            if (lower.includes('urgence')) {
+                return "<b>Urgence :</b> Appel : <b>05XX-XXXXXX</b> (24/7). Si critique, composez le <b>15</b> (SAMU).";
+            }
+            if (lower.includes('bonjour') || lower.includes('salut')) {
+                return "Bonjour ! Je suis là pour vous aider. Que puis-je faire pour vous ?";
+            }
+            if (lower.includes('merci')) {
+                return "Je vous en prie ! N'hésitez pas si vous avez d'autres questions.";
+            }
+            return "Je comprends. Pour mieux vous aider, pourriez-vous préciser votre demande ? Vous pouvez aussi consulter nos <a href='#services'>services</a>.";
+        }
+
+        function sendChatMessage() {
+            const text = chatInputField.value.trim();
+            if (!text) return;
+            addChatMsg(text, true);
+            chatInputField.value = '';
+            showTyping();
+            setTimeout(() => {
+                hideTyping();
+                addChatMsg(getAIResponse(text), false);
+            }, 1500);
+        }
+
+        function sendQuick(text) {
+            chatInputField.value = text;
+            sendChatMessage();
+        }
+    </script>
 
 </body>
 </html>

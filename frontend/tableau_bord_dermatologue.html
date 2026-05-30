@@ -213,8 +213,8 @@ outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(8, 145, 
         <div class="doctor-profile">
             <img src="https://img.icons8.com/color/96/doctor-male-skin-type-4.png" alt="Docteur">
             <div>
-                <h2 style="margin:0">Dr. Karim Bennani</h2>
-                <small>Spécialité: Dermatologie Clinique | Cabinet 04</small>
+                <h2 style="margin:0">Dr. ---</h2>
+                <small>Spécialité: --- | Cabinet ---</small>
             </div>
         </div>
         <button class="btn btn-outline" onclick="window.location.href='accueil.html'">Déconnexion</button>
@@ -222,7 +222,7 @@ outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(8, 145, 
 
     <nav>
         <div class="tab active" onclick="switchTab('dashboard', this)">Consultations du Jour</div>
-        <div class="tab" onclick="switchTab('historique', this)">Historique Patients</div>
+        <div class="tab" onclick="switchTab('outil-ia', this)">Outil IA</div>
         <div class="tab" onclick="switchTab('stats', this)">Mes Statistiques</div>
     </nav>
 
@@ -234,8 +234,8 @@ outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(8, 145, 
                     <div style="display:flex; justify-content:space-between; align-items:start;">
                         <div>
                             <span style="color:var(--primary); font-weight:bold;">EN COURS</span>
-                            <h2 style="margin:5px 0;">Ahmed El Mansouri</h2>
-                            <p><b>Âge:</b> 45 ans | <b>Motif:</b> Eruption cutanée et prurit</p>
+                            <h2 style="margin:5px 0;">---</h2>
+                            <p><b>Âge:</b> --- | <b>Motif:</b> ---</p>
                         </div>
                         <div style="text-align:right;">
                             <div class="badge bg-urgent" style="font-size:1rem; padding:8px 15px;">URGENT (IA)</div>
@@ -245,9 +245,9 @@ outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(8, 145, 
                     <div class="ia-box">
                         <strong>Analyse IA Prédictive:</strong>
                         <ul style="margin:5px 0; font-size:0.9rem;">
-                            <li>Durée estimée de consultation: <b>22 min</b></li>
-                            <li>Niveau de priorité: <b>9/10</b></li>
-                            <li>Analyse image (Dermatosocopie): <span style="color:var(--urgent-red);">Suspicion ZES (78%)</span></li>
+                            <li>Durée estimée de consultation: <b>---</b></li>
+                            <li>Niveau de priorité: <b>---</b></li>
+                            <li>Analyse image (Dermatosocopie): <span style="color:var(--urgent-red);">---</span></li>
                         </ul>
                     </div>
 
@@ -265,7 +265,7 @@ outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(8, 145, 
                     <form id="formNotesConsultation">
                         <div class="form-group">
                             <label for="motif">Motif de consultation</label>
-                            <input type="text" id="motif" name="motif" placeholder="ex: Eruption cutanée, prurit, grain de beauté" value="Eruption cutanée et prurit">
+                            <input type="text" id="motif" name="motif" placeholder="ex: Eruption cutanée, prurit, grain de beauté" value="---">
                         </div>
                         <div class="form-group">
                             <label for="observations">Observations cliniques</label>
@@ -274,11 +274,11 @@ outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(8, 145, 
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="dureeConsult">Durée (min)</label>
-                                <input type="number" id="dureeConsult" name="dureeConsult" min="5" max="120" value="22" placeholder="22">
+                                <input type="number" id="dureeConsult" name="dureeConsult" min="5" max="120" value="---" placeholder="---">
                             </div>
                             <div class="form-group">
                                 <label for="priorite">Priorité (1-10)</label>
-                                <input type="number" id="priorite" name="priorite" min="1" max="10" value="9" placeholder="9">
+                                <input type="number" id="priorite" name="priorite" min="1" max="10" value="---" placeholder="---">
                             </div>
                         </div>
                         <div class="form-actions">
@@ -295,61 +295,39 @@ outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(8, 145, 
                         <h3>Prochains Patients</h3>
                     </div>
                     <div class="waiting-item">
-                        <div><b>#02</b> Salma Bennani<br><small>11:15 - Contrôle</small></div>
-                        <span class="badge bg-normal">NORMAL</span>
+                        <div><b>#--</b> ---<br><small>--:-- - ---</small></div>
+                        <span class="badge bg-normal">---</span>
                     </div>
                     <div class="waiting-item">
-                        <div><b>#03</b> Youssef Tazi<br><small>11:45 - Dermatosocopie</small></div>
-                        <span class="badge bg-normal">NORMAL</span>
+                        <div><b>#--</b> ---<br><small>--:-- - ---</small></div>
+                        <span class="badge bg-normal">---</span>
                     </div>
                     <div class="waiting-item" style="background:#fff5f5;">
-                        <div><b>#04</b> Driss Amrani<br><small>12:15 - Urgence</small></div>
-                        <span class="badge bg-urgent">URGENT</span>
+                        <div><b>#--</b> ---<br><small>--:-- - ---</small></div>
+                        <span class="badge bg-urgent">---</span>
                     </div>
                 </div>
 
                 <div class="card" style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color:white;">
                     <h4 style="margin-top:0;">Temps Global</h4>
-                    <p>Retard estimé: <b>+12 min</b></p>
-                    <small>IA suggère d'accélérer les contrôles simples.</small>
+                    <p>Retard estimé: <b>---</b></p>
+                    <small>---</small>
                 </div>
             </div>
 
         </div>
     </div>
 
-    <div id="historique" class="container">
+    <div id="outil-ia" class="container">
         <div class="card">
             <div class="card-header">
-                <h3>Recherche Historique Patients</h3>
+                <h3>Outil IA</h3>
             </div>
-            <form id="formRecherchePatient">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="rechNom">Nom ou prénom</label>
-                        <input type="text" id="rechNom" name="nom" placeholder="Nom du patient">
-                    </div>
-                    <div class="form-group">
-                        <label for="rechCIN">CIN</label>
-                        <input type="text" id="rechCIN" name="cin" placeholder="Numéro CIN">
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="rechDateDebut">Date début</label>
-                        <input type="date" id="rechDateDebut" name="dateDebut">
-                    </div>
-                    <div class="form-group">
-                        <label for="rechDateFin">Date fin</label>
-                        <input type="date" id="rechDateFin" name="dateFin">
-                    </div>
-                </div>
-                <div class="form-actions">
-                    <button type="submit" class="btn btn-start">Rechercher</button>
-                    <button type="reset" class="btn" style="background:#64748b; color:white;">Réinitialiser</button>
-                </div>
-            </form>
-            <p style="margin-top:20px; color:#64748b;">La liste des patients correspondants s'affichera ici.</p>
+            <div style="text-align:center; padding:60px 20px; color:#94a3b8;">
+                <i class="fas fa-robot" style="font-size:4rem; color:#e2e8f0; margin-bottom:20px;"></i>
+                <h4>Outil IA en cours de développement</h4>
+                <p>Cette section sera disponible prochainement.</p>
+            </div>
         </div>
     </div>
 
@@ -358,20 +336,20 @@ outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(8, 145, 
             <div class="card-header">
                 <h3>Mes Statistiques Mensuelles</h3>
             </div>
-            <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:20px; text-align:center;">
-                <div class="sub-box" style="padding:20px; background:#f1f5f9; border-radius:10px;">
-                    <h4>Patients vus</h4>
-                    <p style="font-size:2rem; font-weight:bold;">142</p>
+                <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:20px; text-align:center;">
+                    <div class="sub-box" style="padding:20px; background:#f1f5f9; border-radius:10px;">
+                        <h4>Patients vus</h4>
+                        <p style="font-size:2rem; font-weight:bold;">---</p>
+                    </div>
+                    <div class="sub-box" style="padding:20px; background:#f1f5f9; border-radius:10px;">
+                        <h4>Temps moy / Patient</h4>
+                        <p style="font-size:2rem; font-weight:bold;">---</p>
+                    </div>
+                    <div class="sub-box" style="padding:20px; background:#f1f5f9; border-radius:10px;">
+                        <h4>Satisfaction</h4>
+                        <p style="font-size:2rem; font-weight:bold;">---</p>
+                    </div>
                 </div>
-                <div class="sub-box" style="padding:20px; background:#f1f5f9; border-radius:10px;">
-                    <h4>Temps moy / Patient</h4>
-                    <p style="font-size:2rem; font-weight:bold;">18 min</p>
-                </div>
-                <div class="sub-box" style="padding:20px; background:#f1f5f9; border-radius:10px;">
-                    <h4>Satisfaction</h4>
-                    <p style="font-size:2rem; font-weight:bold;">4.8/5</p>
-                </div>
-            </div>
         </div>
     </div>
 
@@ -386,11 +364,6 @@ outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(8, 145, 
             e.preventDefault();
             console.log('Notes enregistrées', { motif: document.getElementById('motif').value, observations: document.getElementById('observations').value });
             alert('Notes de consultation enregistrées.');
-        });
-        document.getElementById('formRecherchePatient').addEventListener('submit', function(e) {
-            e.preventDefault();
-            console.log('Recherche', { nom: document.getElementById('rechNom').value, cin: document.getElementById('rechCIN').value });
-            alert('Recherche effectuée (résultats à connecter au backend).');
         });
     </script>
 

@@ -8,7 +8,6 @@ tableau_bord_patient.html            - Tableau de bord du patient
 tableau_bord_dermatologue.html       - Tableau de bord du médecin dermatologue
 tableau_bord_admin.html              - Tableau de bord de l'administrateur
 tableau_bord_reception.html          - Tableau de bord de la réception
-assistant.html                       - Assistant IA virtuel pour les questions dermatologiques
 
 ---
 
@@ -22,4 +21,3 @@ Toutes les redirections entre pages sont configurées en français :
 - Doctor Dashboard → tableau_bord_dermatologue.html
 - Admin Dashboard → tableau_bord_admin.html
 - Reception Dashboard → tableau_bord_reception.html
-- Chatbot → assistant.html

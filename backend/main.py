@@ -44,6 +44,9 @@ def health_check():
 @app.post("/auth/register", status_code=status.HTTP_201_CREATED)
 def register_user(user_data: dict, db: Session = Depends(database.get_db)):
     role = user_data.get("role")
+    if role != "patient":
+        raise HTTPException(status_code=403, detail="Seuls les patients peuvent s'inscrire.")
+
     if role not in ["patient", "doctor", "receptionist", "admin"]:
         raise HTTPException(status_code=400, detail="Rôle invalide. Doit être : patient, doctor, receptionist, ou admin")
 
@@ -124,6 +127,9 @@ def login_user(login_data: schemas.LoginRequest, db: Session = Depends(database.
 
     if not auth.verify_password(login_data.password, user.password_hash):
         raise HTTPException(status_code=401, detail="Email ou mot de passe invalide")
+
+    if user.role != "patient":
+        raise HTTPException(status_code=403, detail="Seuls les patients peuvent se connecter.")
 
     if user.role != login_data.role:
         raise HTTPException(status_code=403, detail=f"Ce compte n'est pas un compte {login_data.role}")

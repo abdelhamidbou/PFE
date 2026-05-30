@@ -77,30 +77,6 @@
             flex-direction: column;
             justify-content: center;
         }
-        .login-tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 40px;
-            background: #f1f5f9;
-            border-radius: 12px;
-            padding: 5px;
-        }
-        .tab {
-            flex: 1;
-            padding: 12px;
-            text-align: center;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: all 0.3s;
-            color: #64748b;
-        }
-        .tab.active {
-            background: white;
-            color: #0891b2;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-        }
         .form-group {
             margin-bottom: 25px;
         }
@@ -111,7 +87,7 @@
             margin-bottom: 8px;
             color: #334155;
         }
-        .form-group input, .form-group select {
+        .form-group input {
             width: 100%;
             padding: 14px 16px;
             border: 2px solid #e2e8f0;
@@ -121,14 +97,9 @@
             transition: border-color 0.3s;
             outline: none;
         }
-        .form-group input:focus, .form-group select:focus {
+        .form-group input:focus {
             border-color: #0891b2;
         }
-        .form-row {
-            display: flex;
-            gap: 15px;
-        }
-        .form-row .form-group { flex: 1; }
         .login-btn {
             width: 100%;
             padding: 16px;
@@ -184,8 +155,6 @@
             gap: 8px;
         }
         .back-home:hover { color: #0891b2; }
-        .role-section { display: none; }
-        .role-section.active { display: block; }
         @media (max-width: 768px) {
             .login-container { flex-direction: column; margin: 20px; }
             .login-left { padding: 40px 30px; }
@@ -200,7 +169,7 @@
     <div class="login-container">
         <div class="login-left">
             <h1>Bienvenue sur DermaFlow AI</h1>
-            <p>Accédez à votre portail dermatologique personnalisé. Sélectionnez votre rôle pour vous connecter en toute sécurité.</p>
+            <p>Accédez à votre portail dermatologique personnalisé. Connectez-vous en tant que patient pour accéder à vos dossiers en toute sécurité.</p>
             <div class="login-left-features">
                 <div class="feature">
                     <i class="fas fa-lock"></i>
@@ -221,14 +190,7 @@
             </div>
         </div>
         <div class="login-right">
-            <div class="login-tabs">
-                <div class="tab active" onclick="switchTab('patient')">Patient</div>
-                <div class="tab" onclick="switchTab('doctor')">Médecin</div>
-                <div class="tab" onclick="switchTab('receptionist')">Réception</div>
-                <div class="tab" onclick="switchTab('admin')">Admin</div>
-            </div>
-
-            <div id="patient-form" class="role-section active">
+            <div id="patient-form" class="role-section">
                 <div class="form-group">
                     <label>Adresse Email</label>
                     <input type="email" id="patientEmail" placeholder="Entrez votre email">
@@ -242,63 +204,11 @@
                     <a href="#">Mot de passe oublié ?</a> | <a href="inscription.html?role=patient">Créer un Compte</a>
                 </div>
             </div>
-
-            <div id="doctor-form" class="role-section">
-                <div class="form-group">
-                    <label>Email du Médecin</label>
-                    <input type="email" id="doctorEmail" placeholder="Entrez votre email">
-                </div>
-                <div class="form-group">
-                    <label>Mot de Passe</label>
-                    <input type="password" id="doctorPassword" placeholder="Entrez votre mot de passe">
-                </div>
-                <button class="login-btn" onclick="handleLogin('doctor')">Se Connecter comme Médecin</button>
-                <div class="forgot">
-                    <a href="#">Mot de passe oublié ?</a> | <a href="inscription.html?role=doctor">Créer un Compte</a>
-                </div>
-            </div>
-
-            <div id="admin-form" class="role-section">
-                <div class="form-group">
-                    <label>Email Admin</label>
-                    <input type="email" id="adminEmail" placeholder="Entrez votre email">
-                </div>
-                <div class="form-group">
-                    <label>Mot de Passe</label>
-                    <input type="password" id="adminPassword" placeholder="Entrez votre mot de passe">
-                </div>
-                <button class="login-btn" onclick="handleLogin('admin')">Se Connecter comme Admin</button>
-                <div class="forgot">
-                    <a href="#">Mot de passe oublié ?</a> | <a href="inscription.html?role=admin">Créer un Compte</a>
-                </div>
-            </div>
-
-            <div id="receptionist-form" class="role-section">
-                <div class="form-group">
-                    <label>Email du Personnel</label>
-                    <input type="email" id="receptionistEmail" placeholder="Entrez votre email">
-                </div>
-                <div class="form-group">
-                    <label>Mot de Passe</label>
-                    <input type="password" id="receptionistPassword" placeholder="Entrez votre mot de passe">
-                </div>
-                <button class="login-btn" onclick="handleLogin('receptionist')">Se Connecter comme Réception</button>
-                <div class="forgot">
-                    <a href="#">Mot de passe oublié ?</a> | <a href="inscription.html?role=receptionist">Créer un Compte</a>
-                </div>
-            </div>
         </div>
     </div>
 
     <script>
         const API_BASE = 'http://localhost:8000';
-
-        function switchTab(role) {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.role-section').forEach(s => s.classList.remove('active'));
-            document.querySelector(`[onclick="switchTab('${role}')"]`).classList.add('active');
-            document.getElementById(`${role}-form`).classList.add('active');
-        }
 
         async function handleLogin(role) {
             const email = document.getElementById(role + 'Email').value.trim();
@@ -309,7 +219,7 @@
                 return;
             }
 
-            const btn = document.querySelector(`#${role}-form .login-btn`);
+            const btn = document.querySelector('.login-btn');
             const originalText = btn.textContent;
             btn.disabled = true;
             btn.textContent = 'Connexion en cours...';
@@ -334,14 +244,7 @@
                 localStorage.setItem('last_name', data.last_name);
                 localStorage.setItem('email', data.email);
 
-                const dashboardMap = {
-                    patient: 'tableau_bord_patient.html',
-                    doctor: 'tableau_bord_dermatologue.html',
-                    receptionist: 'tableau_bord_reception.html',
-                    admin: 'tableau_bord_admin.html',
-                };
-
-                window.location.href = dashboardMap[role] || 'connexion.html';
+                window.location.href = 'tableau_bord_patient.html';
             } catch (error) {
                 alert(error.message);
                 btn.disabled = false;
@@ -351,4 +254,3 @@
     </script>
 </body>
 </html>
-</code>

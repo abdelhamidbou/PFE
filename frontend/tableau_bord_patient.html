@@ -44,15 +44,12 @@
         .btn-blue { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); }
         .btn-blue:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(8, 145, 178, 0.3); }
         .btn-green { background: var(--btn-green); }
+        .btn-red { background: #ef4444; }
 
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
         .sub-box { background: #f8fafc; border: 1px solid #edf2f7; border-radius: 8px; padding: 12px; }
         .waiting-number { font-size: 3rem; font-weight: 800; color: #1e293b; margin: 10px 0; }
-
-        .chat-messages { height: 300px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding: 10px; background: #fafafa; border-radius: 8px; }
-        .msg { max-width: 80%; padding: 10px; border-radius: 10px; font-size: 0.9rem; }
-        .msg-dr { align-self: flex-start; background: #e2e8f0; }
-        .msg-user { align-self: flex-end; background: var(--primary); color: white; }
 
         .form-group { margin-bottom: 18px; }
         .form-group label { display: block; font-weight: 600; color: var(--text-dark); margin-bottom: 6px; font-size: 0.9rem; }
@@ -66,84 +63,222 @@
         .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         .form-actions { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
         .form-actions .btn-action { padding: 10px 20px; }
-        .modal-form { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
-        .modal-form.active { display: flex; }
-        .modal-form .card { max-width: 500px; width: 90%; max-height: 90vh; overflow-y: auto; }
-        .form-error { font-size: 0.8rem; color: var(--urgent-text); margin-top: 4px; }
+
+        .chat-messages { height: 300px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding: 10px; background: #fafafa; border-radius: 8px; }
+        .msg { max-width: 80%; padding: 10px; border-radius: 10px; font-size: 0.9rem; }
+        .msg-dr { align-self: flex-start; background: #e2e8f0; }
+        .msg-user { align-self: flex-end; background: var(--primary); color: white; }
+
+        .profile-info-item { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #f1f5f9; }
+        .profile-info-item:last-child { border-bottom: none; }
+        .profile-info-label { color: #64748b; font-weight: 500; }
+        .profile-info-value { color: #1e293b; font-weight: 600; }
+
+        .time-slot { padding: 10px 16px; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer; text-align: center; font-weight: 600; transition: all 0.2s; background: white; }
+        .time-slot:hover { border-color: var(--primary); color: var(--primary); }
+        .time-slot.selected { background: var(--primary); color: white; border-color: var(--primary); }
+        .time-slot.disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .dossier-section { background: #f8fafc; border-radius: 8px; padding: 20px; margin-top: 15px; }
+        .dossier-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #e2e8f0; }
+        .dossier-item:last-child { border-bottom: none; }
+
+        @media (max-width: 768px) {
+            .grid-2, .grid-3 { grid-template-columns: 1fr; }
+            nav { gap: 15px; font-size: 0.9rem; }
+        }
     </style>
 </head>
 <body>
 
 <header>
     <div class="user-profile">
-        <img src="https://i.pravatar.cc/150?u=ahmed" alt="Patient">
+        <img src="https://i.pravatar.cc/150?u=patient" alt="Patient" id="headerImg">
         <div>
-            <h2 style="margin:0">Ahmed El Mansouri</h2>
-            <small>45 ans | ahmed.mansouri@gmail.com</small>
+            <h2 style="margin:0" id="headerName">---</h2>
+            <small id="headerInfo">---</small>
         </div>
     </div>
-    <button class="btn-action" style="background:none; border: 1px solid white;">Déconnexion</button>
+    <button class="btn-action" style="background:none; border: 1px solid white;" onclick="logout()">Déconnexion</button>
 </header>
 
 <nav>
+    <div class="tab" onclick="switchTab('profil', this)">Mon Profil</div>
     <div class="tab active" onclick="switchTab('rdv', this)">Mes Rendez-vous</div>
-    <div class="tab" onclick="switchTab('dossier', this)">Mon Dossier Médical</div>
     <div class="tab" onclick="switchTab('msg', this)">Messages</div>
 </nav>
 
+<!-- MON PROFIL -->
+<div id="profil" class="container">
+    <div class="card">
+        <div class="card-header"><h3><i class="fas fa-user-circle"></i> Mes Informations Personnelles</h3></div>
+        <div class="grid-2">
+            <div>
+                <div class="profile-info-item">
+                    <span class="profile-info-label">Nom complet</span>
+                    <span class="profile-info-value" id="profilNom">---</span>
+                </div>
+                <div class="profile-info-item">
+                    <span class="profile-info-label">Email</span>
+                    <span class="profile-info-value" id="profilEmail">---</span>
+                </div>
+                <div class="profile-info-item">
+                    <span class="profile-info-label">Téléphone</span>
+                    <span class="profile-info-value" id="profilPhone">---</span>
+                </div>
+                <div class="profile-info-item">
+                    <span class="profile-info-label">Date de naissance</span>
+                    <span class="profile-info-value" id="profilDOB">---</span>
+                </div>
+            </div>
+            <div>
+                <div class="profile-info-item">
+                    <span class="profile-info-label">ID Patient</span>
+                    <span class="profile-info-value" id="profilID">---</span>
+                </div>
+                <div class="profile-info-item">
+                    <span class="profile-info-label">Date d'inscription</span>
+                    <span class="profile-info-value" id="profilDate">---</span>
+                </div>
+                <div class="profile-info-item">
+                    <span class="profile-info-label">Forfait</span>
+                    <span class="profile-info-value" id="profilForfait">---</span>
+                </div>
+                <div class="profile-info-item">
+                    <span class="profile-info-label">Statut</span>
+                    <span class="profile-info-value" style="color: var(--btn-green);"><i class="fas fa-check-circle"></i> Actif</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MES RENDEZ-VOUS -->
 <div id="rdv" class="container active">
     <div style="background: var(--urgent-bg); color: var(--urgent-text); border: 1px solid #fed7d7; padding: 12px; border-radius: 8px; margin-bottom: 20px;">
         <i class="fas fa-exclamation-triangle"></i> <b>Urgence :</b> Un cas urgent est en cours de traitement. L'attente peut être plus longue.
     </div>
 
+    <!-- Prendre un Rendez-vous -->
+    <div class="card">
+        <div class="card-header"><h3><i class="fas fa-calendar-plus"></i> Prendre un Rendez-vous</h3></div>
+        <form id="formRendezVous" onsubmit="handleRendezVous(event)">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Sélectionner un Médecin</label>
+                    <select id="rdvMedecin" required onchange="updateTimeSlots()">
+                        <option value="">Choisir un médecin</option>
+                        <option value="bennani">Dr. Karim Bennani</option>
+                        <option value="amrani">Dr. Leila Amrani</option>
+                        <option value="tazi">Dr. Youssef Tazi</option>
+                        <option value="zahra">Dr. Fatima Zahra</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Date du Rendez-vous</label>
+                    <input type="date" id="rdvDate" required onchange="updateTimeSlots()">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Motif de la Consultation</label>
+                <select id="rdvMotif" required>
+                    <option value="">Choisir un motif</option>
+                    <option value="consultation_generale">Consultation Générale</option>
+                    <option value="controle">Contrôle / Suivi</option>
+                    <option value="bouton">Bouton / Grain de beauté</option>
+                    <option value="eruption">Eruption Cutanée</option>
+                    <option value="acne">Acné / Cicatrices</option>
+                    <option value="cheveux">Problème de Cheveux / Cuir chevelu</option>
+                    <option value="allergie">Allergie / Sensibilité</option>
+                    <option value="esthetique">Consultation Esthétique</option>
+                    <option value="autre">Autre</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Notes complémentaires</label>
+                <textarea id="rdvNotes" rows="2" placeholder="Décrivez vos symptômes ou questions..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>Créneaux Horaires Disponibles</label>
+                <div id="timeSlots" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; margin-top: 10px;">
+                    <p style="color: #94a3b8; grid-column: 1 / -1;">Sélectionnez un médecin et une date pour voir les créneaux disponibles.</p>
+                </div>
+            </div>
+            <input type="hidden" id="rdvTime" value="">
+            <div class="form-actions">
+                <button type="submit" class="btn-action btn-green"><i class="fas fa-check"></i> Confirmer le Rendez-vous</button>
+                <button type="button" class="btn-action btn-blue" onclick="resetForm()"><i class="fas fa-undo"></i> Réinitialiser</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Mes Rendez-vous Actuels -->
+    <div class="card">
+        <div class="card-header"><h3><i class="fas fa-calendar-check"></i> Mon Prochain Rendez-vous</h3></div>
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:15px;">
+            <img src="https://i.pravatar.cc/150?u=dr" style="width:50px; border-radius:50%;">
+            <div><strong id="rdvDrName">Dr. Karim Bennani</strong><br><small>Dermatologue Clinique</small></div>
+        </div>
+        <div style="text-align:center; padding:15px; background:#fcfcfc; border-radius:8px; border:1px solid #eee;">
+            <div>Mercredi 15 Juin 2024</div>
+            <div style="font-size:1.6rem; font-weight:bold;">10:30</div>
+        </div>
+        <button class="btn-action btn-blue" style="width:100%; margin-top:15px;">Voir Détails ></button>
+    </div>
+
+    <!-- Mon Dossier Médical (moved inside RDV page) -->
+    <div class="card">
+        <div class="card-header"><h3><i class="fas fa-file-medical"></i> Mon Dossier Médical</h3></div>
+        <div class="dossier-section">
+            <div class="dossier-item">
+                <span class="profile-info-label">Allergies connues</span>
+                <span class="profile-info-value" id="dispAllergies">---</span>
+            </div>
+            <div class="dossier-item">
+                <span class="profile-info-label">Conditions / Antécédents</span>
+                <span class="profile-info-value" id="dispConditions">---</span>
+            </div>
+            <div class="dossier-item">
+                <span class="profile-info-label">Traitements en cours</span>
+                <span class="profile-info-value" id="dispTraitements">---</span>
+            </div>
+            <div class="dossier-item">
+                <span class="profile-info-label">Groupe sanguin</span>
+                <span class="profile-info-value" id="dispGroupe">---</span>
+            </div>
+            <div class="dossier-item">
+                <span class="profile-info-label">Dernière consultation</span>
+                <span class="profile-info-value" id="dispDerniere">---</span>
+            </div>
+        </div>
+        <button type="button" class="btn-action btn-blue" style="margin-top:15px;" onclick="openModalDossier()"><i class="fas fa-pen"></i> Modifier mon Dossier</button>
+    </div>
+
+    <!-- File d'attente -->
     <div class="grid-2">
         <div class="card">
-            <div class="card-header"><h3>Mon Prochain Rendez-vous</h3></div>
-            <div style="display:flex; align-items:center; gap:12px; margin-bottom:15px;">
-                <img src="https://i.pravatar.cc/150?u=dr" style="width:50px; border-radius:50%;">
-                <div><strong>Dr. Karim Bennani</strong><br><small>Dermatologue Clinique</small></div>
-            </div>
-            <div style="text-align:center; padding:15px; background:#fcfcfc; border-radius:8px; border:1px solid #eee;">
-                <div>Mercredi 15 Juin 2024</div>
-                <div style="font-size:1.6rem; font-weight:bold;">10:30</div>
-            </div>
-            <button class="btn-action btn-blue" style="width:100%; margin-top:15px;">Voir Détails ></button>
-        </div>
-
-        <div class="card" style="text-align:center;">
-            <div class="card-header"><h3 style="text-align:left;">Temps d'Attente Actuel</h3></div>
-            <p style="color:#64748b; margin-top:20px;">Temps d'Attente Estimé:</p>
-            <div class="waiting-number">18 <span style="font-size:1.2rem;">min</span></div>
-            <p style="font-weight:500;">Votre tour approche ! ⏳</p>
-        </div>
-
-        <div class="card">
-            <div class="card-header"><h3>File d'attente</h3></div>
+            <div class="card-header"><h3><i class="fas fa-clock"></i> File d'attente</h3></div>
             <div style="text-align:center; padding: 10px;">
                 <p style="color:#64748b;">Nombre de patients avant vous :</p>
                 <div style="font-size: 2.5rem; font-weight: bold; color: var(--btn-green);">03</div>
                 <small>Estimation : ~6 min par patient</small>
             </div>
         </div>
-    </div>
-</div>
-
-<div id="dossier" class="container">
-    <div class="card">
-        <div class="card-header"><h3>Mon Dossier Médical</h3></div>
-        <div style="text-align:center; padding:40px; color:#64748b;">
-            <i class="fas fa-folder-medical" style="font-size:3rem; color:#e2e8f0; margin-bottom:15px;"></i>
-            <p>Votre dossier médical est accessible via votre dermatologue traitant.</p>
-            <p style="font-size:0.9rem; margin-top:10px;">Contactez le cabinet pour plus d'informations.</p>
+        <div class="card" style="text-align:center;">
+            <div class="card-header"><h3 style="text-align:left;"><i class="fas fa-hourglass-half"></i> Temps d'Attente Actuel</h3></div>
+            <p style="color:#64748b; margin-top:20px;">Temps d'Attente Estimé:</p>
+            <div class="waiting-number">18 <span style="font-size:1.2rem;">min</span></div>
+            <p style="font-weight:500;">Votre tour approche ! ⏳</p>
         </div>
     </div>
 </div>
 
+<!-- MESSAGES -->
 <div id="msg" class="container">
     <div class="card">
-        <div class="card-header"><h3>Messages</h3></div>
+        <div class="card-header"><h3><i class="fas fa-envelope"></i> Messages</h3></div>
         <div class="chat-messages" id="chatMessages">
-            <div class="msg msg-dr">Bonjour Ahmed, comment va votre peau après le traitement ?</div>
+            <div class="msg msg-dr">Bonjour, comment va votre peau après le traitement ?</div>
             <div class="msg msg-user">Bonjour Docteur, elle est beaucoup mieux. Les rougeurs ont diminué.</div>
         </div>
         <form id="formMessage" class="form-message">
@@ -158,25 +293,27 @@
     </div>
 </div>
 
-<div id="modalDossier" class="modal-form">
-    <div class="card">
-        <div class="card-header"><h3>Modifier le résumé médical</h3> <button class="btn-action" style="background:#64748b;" onclick="closeModalDossier()">Fermer</button></div>
+<!-- Modal pour modifier dossier médical -->
+<div id="modalDossier" class="modal-form" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:1000; justify-content:center; align-items:center;">
+    <div class="card" style="max-width:500px; width:90%; max-height:90vh; overflow-y:auto;">
+        <div class="card-header"><h3>Modifier le Résumé Médical</h3> <button class="btn-action" style="background:#64748b;" onclick="closeModalDossier()">Fermer</button></div>
         <form id="formDossier">
             <div class="form-group">
                 <label for="allergies">Allergies connues</label>
-                <input type="text" id="allergies" name="allergies" placeholder="ex: Parabènes, Nickel" value="Nickel">
+                <input type="text" id="allergies" name="allergies" placeholder="ex: Parabènes, Nickel" value="">
             </div>
             <div class="form-group">
                 <label for="conditions">Conditions / Antécédents</label>
-                <input type="text" id="conditions" name="conditions" placeholder="ex: Eczéma, Psoriasis" value="Eczéma sévère">
+                <input type="text" id="conditions" name="conditions" placeholder="ex: Eczéma, Psoriasis" value="">
             </div>
             <div class="form-group">
                 <label for="traitements">Traitements en cours</label>
-                <input type="text" id="traitements" name="traitements" placeholder="ex: Corticostéroïdes" value="Hydrocortisone 1%">
+                <input type="text" id="traitements" name="traitements" placeholder="ex: Corticostéroïdes" value="">
             </div>
             <div class="form-group">
                 <label for="groupeSanguin">Groupe sanguin</label>
                 <select id="groupeSanguin" name="groupeSanguin">
+                    <option value="">Non spécifié</option>
                     <option value="O+">O+</option>
                     <option value="O-">O-</option>
                     <option value="A+">A+</option>
@@ -196,22 +333,97 @@
 </div>
 
 <script>
+    // Navigation entre onglets
     function switchTab(tabId, el) {
         document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
         document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
         document.getElementById(tabId).classList.add('active');
-        el.classList.add('active');
+        if(el) el.classList.add('active');
     }
-    function openModalDossier() { document.getElementById('modalDossier').classList.add('active'); }
-    function closeModalDossier() { document.getElementById('modalDossier').classList.remove('active'); }
+
+    // Charger les infos du patient depuis localStorage (remplacements des ---)
+    function loadPatientInfo() {
+        const firstName = localStorage.getItem('first_name') || '---';
+        const lastName = localStorage.getItem('last_name') || '---';
+        const email = localStorage.getItem('email') || '---';
+        const userId = localStorage.getItem('user_id') || '---';
+        const role = localStorage.getItem('role') || '---';
+
+        // Header
+        document.getElementById('headerName').textContent = firstName + ' ' + lastName;
+        document.getElementById('headerInfo').textContent = email;
+
+        // Profil
+        document.getElementById('profilNom').textContent = firstName + ' ' + lastName;
+        document.getElementById('profilEmail').textContent = email;
+        document.getElementById('profilPhone').textContent = '---'; // non stocké, à remplir via backend
+        document.getElementById('profilDOB').textContent = '---'; // non stocké, à remplir via backend
+        document.getElementById('profilID').textContent = 'P-' + String(userId).padStart(4, '0');
+        document.getElementById('profilDate').textContent = new Date().toLocaleDateString('fr-FR');
+        document.getElementById('profilForfait').textContent = 'Standard';
+    }
+
+    // Rendez-vous - Créneaux horaires
+    function updateTimeSlots() {
+        const medecin = document.getElementById('rdvMedecin').value;
+        const date = document.getElementById('rdvDate').value;
+        const container = document.getElementById('timeSlots');
+
+        if (!medecin || !date) {
+            container.innerHTML = '<p style="color: #94a3b8; grid-column: 1 / -1;">Sélectionnez un médecin et une date pour voir les créneaux disponibles.</p>';
+            return;
+        }
+
+        // Génération de créneaux fictifs à titre d'exemple
+        const slots = ['08:00', '08:30', '09:00', '09:30', '10:00', '10:30', '11:00', '14:00', '14:30', '15:00', '15:30', '16:00'];
+        container.innerHTML = '';
+        slots.forEach(slot => {
+            const div = document.createElement('div');
+            div.className = 'time-slot';
+            div.textContent = slot;
+            div.onclick = () => selectTimeSlot(div, slot);
+            container.appendChild(div);
+        });
+    }
+
+    function selectTimeSlot(el, slot) {
+        document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('selected'));
+        el.classList.add('selected');
+        document.getElementById('rdvTime').value = slot;
+    }
+
+    function handleRendezVous(e) {
+        e.preventDefault();
+        const time = document.getElementById('rdvTime').value;
+        if (!time) {
+            alert('Veuillez sélectionner un créneau horaire.');
+            return;
+        }
+        // Simuler la confirmation (connecter au backend)
+        alert('Rendez-vous confirmé pour le ' + document.getElementById('rdvDate').value + ' à ' + time);
+    }
+
+    function resetForm() {
+        document.getElementById('formRendezVous').reset();
+        document.getElementById('rdvTime').value = '';
+        document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('selected'));
+        updateTimeSlots();
+    }
+
+    // Dossier médical
+    function openModalDossier() { document.getElementById('modalDossier').style.display = 'flex'; }
+    function closeModalDossier() { document.getElementById('modalDossier').style.display = 'none'; }
+
     document.getElementById('formDossier').addEventListener('submit', function(e) {
         e.preventDefault();
-        document.getElementById('dispAllergies').textContent = document.getElementById('allergies').value || '—';
-        document.getElementById('dispConditions').textContent = document.getElementById('conditions').value || '—';
-        document.getElementById('dispTraitements').textContent = document.getElementById('traitements').value || '—';
-        document.getElementById('dispGroupe').textContent = document.getElementById('groupeSanguin').value;
+        document.getElementById('dispAllergies').textContent = document.getElementById('allergies').value || '---';
+        document.getElementById('dispConditions').textContent = document.getElementById('conditions').value || '---';
+        document.getElementById('dispTraitements').textContent = document.getElementById('traitements').value || '---';
+        document.getElementById('dispGroupe').textContent = document.getElementById('groupeSanguin').value || '---';
         closeModalDossier();
     });
+
+    // Messages
     document.getElementById('formMessage').addEventListener('submit', function(e) {
         e.preventDefault();
         var txt = document.getElementById('messageText');
@@ -223,8 +435,18 @@
         txt.value = '';
         document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
     });
+
+    // Logout
+    function logout() {
+        localStorage.clear();
+        window.location.href = 'accueil.html';
+    }
+
+    // Charger infos au chargement
+    document.addEventListener('DOMContentLoaded', function() {
+        loadPatientInfo();
+    });
 </script>
 
 </body>
 </html>
-</code>
