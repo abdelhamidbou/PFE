@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Récupération de Mot de Passe - DermaFlow AI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #ecfeff 0%, #ffffff 50%, #e0f2fe 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #334155;
+        }
+        .forgot-container {
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 25px 80px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 500px;
+            padding: 60px 50px;
+            text-align: center;
+        }
+        .forgot-header {
+            margin-bottom: 30px;
+        }
+        .forgot-header i {
+            font-size: 3rem;
+            color: #0891b2;
+            margin-bottom: 20px;
+        }
+        .forgot-header h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #1e293b;
+            margin-bottom: 10px;
+        }
+        .forgot-header p {
+            color: #64748b;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+        .form-group {
+            text-align: left;
+            margin-bottom: 25px;
+        }
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            color: #334155;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: border-color 0.3s;
+            outline: none;
+        }
+        .form-group input:focus {
+            border-color: #0891b2;
+        }
+        .forgot-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.3s;
+            box-shadow: 0 10px 25px rgba(8, 145, 178, 0.3);
+        }
+        .forgot-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 35px rgba(8, 145, 178, 0.4);
+        }
+        .back-home {
+            display: block;
+            margin-top: 25px;
+            color: #64748b;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+        .back-home:hover { color: #0891b2; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <div class="forgot-container">
+        <div id="step1">
+            <div class="forgot-header">
+                <i class="fas fa-key"></i>
+                <h1>Mot de passe oublié ?</h1>
+                <p>Entrez votre adresse email pour réinitialiser votre mot de passe.</p>
+            </div>
+            <div class="form-group">
+                <label>Adresse Email</label>
+                <input type="email" id="forgotEmail" placeholder="exemple@mail.com">
+            </div>
+            <button class="forgot-btn" onclick="requestReset()">Envoyer le lien de récupération</button>
+            <a href="connexion.html" class="back-home"><i class="fas fa-arrow-left"></i> Retour à la connexion</a>
+        </div>
+
+        <div id="step2" class="hidden">
+            <div class="forgot-header">
+                <i class="fas fa-lock-open"></i>
+                <h1>Nouveau mot de passe</h1>
+                <p>Veuillez choisir un nouveau mot de passe sécurisé.</p>
+            </div>
+            <div class="form-group">
+                <label>Nouveau Mot de Passe</label>
+                <input type="password" id="newPassword" placeholder="Entrez votre nouveau mot de passe">
+            </div>
+            <div class="form-group">
+                <label>Confirmer le Mot de Passe</label>
+                <input type="password" id="confirmPassword" placeholder="Confirmez le nouveau mot de passe">
+            </div>
+            <button class="forgot-btn" onclick="resetPassword()">Réinitialiser le mot de passe</button>
+            <a href="connexion.html" class="back-home"><i class="fas fa-arrow-left"></i> Retour à la connexion</a>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8000';
+        let resetToken = '';
+
+        async function requestReset() {
+            const email = document.getElementById('forgotEmail').value.trim();
+            if (!email) {
+                alert('Veuillez entrer votre email.');
+                return;
+            }
+
+            try {
+                const response = await fetch(API_BASE + '/auth/forgot-password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: email }),
+                });
+
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.detail || 'Erreur lors de la demande');
+                }
+
+                // In a real app, the token would be sent by email.
+                // For this prototype, we receive it in the response.
+                resetToken = data.token;
+                document.getElementById('step1').classList.add('hidden');
+                document.getElementById('step2').classList.remove('hidden');
+            } catch (error) {
+                alert(error.message);
+            }
+        }
+
+        async function resetPassword() {
+            const password = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (!password || !confirmPassword) {
+                alert('Veuillez remplir tous les champs.');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                alert('Les mots de passe ne correspondent pas.');
+                return;
+            }
+
+            try {
+                const response = await fetch(API_BASE + '/auth/reset-password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        token: resetToken,
+                        new_password: password 
+                    }),
+                });
+
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.detail || 'Erreur lors de la réinitialisation');
+                }
+
+                alert('Mot de passe réinitialisé avec succès ! Vous pouvez maintenant vous connecter.');
+                window.location.href = 'connexion.html';
+            } catch (error) {
+                alert(error.message);
+            }
+        }
+    </script>
+</body>
+</html>

@@ -28,6 +28,9 @@ class UserBase(BaseModel):
     last_name: str
     email: EmailStr
     phone: Optional[str] = None
+    gender: Optional[str] = None
+    city: Optional[str] = None
+    address: Optional[str] = None
     subscription: str = "basic"
 
 
@@ -50,6 +53,9 @@ class PatientRegister(BaseModel):
     phone: str
     password: str
     date_of_birth: Optional[date] = None
+    gender: Optional[str] = None
+    city: Optional[str] = None
+    address: Optional[str] = None
     subscription: str = "premium"
 
 
@@ -57,6 +63,33 @@ class PatientResponse(UserResponse):
     date_of_birth: Optional[date] = None
     blood_group: Optional[str] = None
     allergies: Optional[str] = None
+    gender: Optional[str] = None
+    city: Optional[str] = None
+    address: Optional[str] = None
+
+
+# --- Schémas Profil Dermatologique ---
+
+class DermatologyProfileCreate(BaseModel):
+    skin_conditions: Optional[str] = None
+    drug_allergies: Optional[str] = None
+    current_treatments: Optional[str] = None
+    skin_type: Optional[str] = None
+    fitzpatrick_phototype: Optional[str] = None
+    chronic_diseases: Optional[str] = None
+    family_history: Optional[str] = None
+    smoking_alcohol: Optional[str] = None
+    occupational_exposure: Optional[str] = None
+
+
+class DermatologyProfileResponse(DermatologyProfileCreate):
+    id: int
+    user_id: int
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
+
+    class Config:
+        from_attributes = True
 
 
 # --- Schémas Médecin ---

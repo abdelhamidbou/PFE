@@ -41,10 +41,51 @@ def health_check():
 
 # --- Points de terminaison d'authentification unifiés ---
 
+@app.post("/auth/forgot-password")
+def forgot_password(data: dict, db: Session = Depends(database.get_db)):
+    email = data.get("email")
+    if not email:
+        raise HTTPException(status_code=400, detail="Email requis")
+
+    user = db.query(models.User).filter(models.User.email == email).first()
+    if not user:
+        return {"message": "Si cet email existe dans notre système, un lien de récupération a été envoyé."}
+
+    from datetime import timedelta
+    reset_token = auth.create_access_token(
+        data={"sub": str(user.id), "purpose": "password_reset"}, 
+        expires_delta=timedelta(minutes=15)
+    )
+    
+    return {"message": "Lien de récupération envoyé", "token": reset_token}
+
+
+@app.post("/auth/reset-password")
+def reset_password(data: dict, db: Session = Depends(database.get_db)):
+    token = data.get("token")
+    new_password = data.get("new_password")
+
+    if not token or not new_password:
+        raise HTTPException(status_code=400, detail="Token et nouveau mot de passe requis")
+
+    payload = auth.decode_access_token(token)
+    if payload is None or payload.get("purpose") != "password_reset":
+        raise HTTPException(status_code=401, detail="Token invalide ou expiré")
+
+    user_id = payload.get("sub")
+    user = db.query(models.User).filter(models.User.id == int(user_id)).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="Utilisateur non trouvé")
+
+    user.password_hash = auth.hash_password(new_password)
+    db.commit()
+
+    return {"message": "Mot de passe réinitialisé avec succès"}
+
+
 @app.post("/auth/register", status_code=status.HTTP_201_CREATED)
 def register_user(user_data: dict, db: Session = Depends(database.get_db)):
     role = user_data.get("role")
-    # Only patients can self-register via the site
     if role != "patient":
         raise HTTPException(status_code=403, detail="Seuls les patients peuvent s'inscrire via le site.")
 
@@ -63,6 +104,9 @@ def register_user(user_data: dict, db: Session = Depends(database.get_db)):
         first_name=user_data.get("first_name"),
         last_name=user_data.get("last_name"),
         phone=user_data.get("phone"),
+        gender=user_data.get("gender"),
+        city=user_data.get("city"),
+        address=user_data.get("address"),
         subscription=user_data.get("subscription", "basic"),
     )
     db.add(user)
@@ -124,6 +168,9 @@ def register_user(user_data: dict, db: Session = Depends(database.get_db)):
         "email": user.email,
         "first_name": user.first_name,
         "last_name": user.last_name,
+        "gender": user.gender,
+        "city": user.city,
+        "address": user.address,
         "subscription": user.subscription,
         "access_token": access_token,
         "token_type": "bearer",
@@ -139,7 +186,6 @@ def login_user(login_data: schemas.LoginRequest, db: Session = Depends(database.
     if not auth.verify_password(login_data.password, user.password_hash):
         raise HTTPException(status_code=401, detail="Email ou mot de passe invalide")
 
-    # Allow all roles to login (patient, doctor, receptionist, admin, infermier)
     if user.role != login_data.role:
         raise HTTPException(status_code=403, detail=f"Ce compte n'est pas un compte {login_data.role}")
 
@@ -169,6 +215,9 @@ def get_current_user_info(current_user: models.User = Depends(auth.get_current_u
         "first_name": current_user.first_name,
         "last_name": current_user.last_name,
         "phone": current_user.phone,
+        "gender": current_user.gender,
+        "city": current_user.city,
+        "address": current_user.address,
         "subscription": current_user.subscription,
         "is_active": current_user.is_active,
         "created_at": current_user.created_at,

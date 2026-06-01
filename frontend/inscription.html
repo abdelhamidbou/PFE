@@ -92,6 +92,46 @@ margin-bottom: 10px;
 color: #64748b;
 font-size: 0.95rem;
 }
+.step-indicator {
+display: flex;
+justify-content: center;
+gap: 10px;
+margin-bottom: 30px;
+}
+.step-dot {
+width: 36px;
+height: 36px;
+border-radius: 50%;
+display: flex;
+align-items: center;
+justify-content: center;
+font-weight: 700;
+font-size: 0.85rem;
+transition: all 0.3s;
+}
+.step-dot.active {
+background: #0891b2;
+color: white;
+}
+.step-dot.completed {
+background: #10b981;
+color: white;
+}
+.step-dot.pending {
+background: #e2e8f0;
+color: #94a3b8;
+}
+.step-line {
+width: 40px;
+height: 2px;
+align-self: center;
+background: #e2e8f0;
+}
+.step-line.completed {
+background: #10b981;
+}
+.form-section { display: none; }
+.form-section.active { display: block; }
 .form-group {
 margin-bottom: 20px;
 }
@@ -102,7 +142,7 @@ font-size: 0.9rem;
 margin-bottom: 8px;
 color: #334155;
 }
-.form-group input, .form-group select {
+.form-group input, .form-group select, .form-group textarea {
 width: 100%;
 padding: 14px 16px;
 border: 2px solid #e2e8f0;
@@ -113,14 +153,34 @@ transition: border-color 0.3s;
 outline: none;
 background: white;
 }
-.form-group input:focus, .form-group select:focus {
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
 border-color: #0891b2;
 }
+.form-group textarea { resize: vertical; min-height: 80px; }
 .form-row {
 display: flex;
 gap: 15px;
 }
 .form-row .form-group { flex: 1; }
+.checkbox-group {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 10px;
+}
+.checkbox-item {
+display: flex;
+align-items: center;
+gap: 10px;
+padding: 10px 14px;
+border: 2px solid #e2e8f0;
+border-radius: 10px;
+cursor: pointer;
+transition: all 0.2s;
+font-size: 0.9rem;
+}
+.checkbox-item:hover { border-color: #0891b2; }
+.checkbox-item.selected { border-color: #0891b2; background: #ecfeff; }
+.checkbox-item input[type="checkbox"] { width: auto; margin: 0; }
 .register-btn {
 width: 100%;
 padding: 16px;
@@ -145,6 +205,23 @@ background: #94a3b8;
 cursor: not-allowed;
 transform: none;
 box-shadow: none;
+}
+.btn-secondary {
+width: 100%;
+padding: 16px;
+background: white;
+color: #0891b2;
+border: 2px solid #0891b2;
+border-radius: 10px;
+font-size: 1rem;
+font-weight: 700;
+cursor: pointer;
+font-family: inherit;
+transition: all 0.3s;
+margin-top: 10px;
+}
+.btn-secondary:hover {
+background: #ecfeff;
 }
 .divider {
 display: flex;
@@ -187,9 +264,6 @@ align-items: center;
 gap: 8px;
 }
 .back-home:hover { color: #0891b2; }
-.subscription-cards {
-  display: none;
-}
 .required::after {
 content: ' *';
 color: #ef4444;
@@ -217,6 +291,7 @@ margin: 15px 0;
 }
 .terms input[type="checkbox"] {
 margin-top: 3px;
+width: auto;
 }
 .terms label {
 font-size: 0.85rem;
@@ -246,6 +321,7 @@ transition: all 0.3s;
 .register-left { padding: 40px 30px; }
 .register-right { padding: 40px 30px; }
 .form-row { flex-direction: column; gap: 0; }
+.checkbox-group { grid-template-columns: 1fr; }
 .back-home { position: static; margin-bottom: 20px; }
 body { padding: 0; }
 }
@@ -278,16 +354,23 @@ body { padding: 0; }
 </div>
 <div class="register-right">
 <div class="register-header">
-<h2>Créer Votre Compte</h2>
-<p id="roleSubtitle">Complétez le formulaire ci-dessous pour commencer</p>
+<h2 id="formTitle">Créer Votre Compte</h2>
+<p id="formSubtitle">Étape 1 sur 2 : Informations personnelles</p>
+</div>
+
+<div class="step-indicator" id="stepIndicator">
+<div class="step-dot active" id="step1Dot">1</div>
+<div class="step-line" id="step1Line"></div>
+<div class="step-dot pending" id="step2Dot">2</div>
 </div>
 
 <div class="success-message" id="successMessage">
-<i class="fas fa-check-circle"></i> Compte créé avec succès ! Redirection vers la connexion...
+<i class="fas fa-check-circle"></i> Inscription terminée ! Redirection vers votre tableau de bord...
 </div>
 
-<div id="patient-section" class="form-section">
-<form id="patientForm" onsubmit="handleRegister(event, 'patient')">
+<!-- Step 1: Basic Info -->
+<div class="form-section active" id="step1">
+<form id="patientForm" onsubmit="handleStep1(event)">
 <div class="form-row">
 <div class="form-group">
 <label class="required">Prénom</label>
@@ -310,6 +393,23 @@ body { padding: 0; }
 <label class="required">Date de Naissance</label>
 <input type="date" id="patientDOB" required>
 </div>
+<div class="form-group">
+<label class="required">Genre</label>
+<select id="patientGender" required>
+<option value="">Sélectionnez votre genre</option>
+<option value="Masculin">Masculin</option>
+<option value="Féminin">Féminin</option>
+<option value="Autre">Autre</option>
+</select>
+</div>
+<div class="form-group">
+<label class="required">Ville</label>
+<input type="text" id="patientCity" placeholder="Entrez votre ville" required>
+</div>
+<div class="form-group">
+<label class="required">Adresse</label>
+<input type="text" id="patientAddress" placeholder="Entrez votre adresse" required>
+</div>
 <div class="form-row">
 <div class="form-group">
 <label class="required">Mot de Passe</label>
@@ -324,15 +424,137 @@ body { padding: 0; }
 </div>
 </div>
 
-    <!-- Forfait par défaut: standard -->
-    <input type="hidden" id="patientSubscription" value="standard">
+<input type="hidden" id="patientSubscription" value="standard">
 
-    <div class="terms">
+<div class="terms">
 <input type="checkbox" id="patientTerms" required>
 <label>J'accepte les <a href="#">Conditions d'Utilisation</a> et la <a href="#">Politique de Confidentialité</a></label>
 </div>
 
-<button type="submit" class="register-btn">Créer un Compte Patient</button>
+<button type="submit" class="register-btn">Créer mon Compte</button>
+</form>
+</div>
+
+<!-- Step 2: Dermatology Profile -->
+<div class="form-section" id="step2">
+<form id="dermatologyForm" onsubmit="handleStep2(event)">
+<p style="color: #64748b; text-align: center; margin-bottom: 25px; font-size: 0.95rem;">
+Veuillez remplir votre profil dermatologique. Ces informations seront visibles par votre dermatologue.
+</p>
+
+<div class="form-group">
+<label class="required">Conditions Cutanées Courantes</label>
+<div class="checkbox-group" id="skinConditionsGroup">
+<div class="checkbox-item" onclick="toggleCheckbox(this)">
+<input type="checkbox" value="Eczéma"> Eczéma
+</div>
+<div class="checkbox-item" onclick="toggleCheckbox(this)">
+<input type="checkbox" value="Psoriasis"> Psoriasis
+</div>
+<div class="checkbox-item" onclick="toggleCheckbox(this)">
+<input type="checkbox" value="Acné Chronique"> Acné Chronique
+</div>
+<div class="checkbox-item" onclick="toggleCheckbox(this)">
+<input type="checkbox" value="Vitiligo"> Vitiligo
+</div>
+<div class="checkbox-item" onclick="toggleCheckbox(this)">
+<input type="checkbox" value="Rosacée"> Rosacée
+</div>
+<div class="checkbox-item" onclick="toggleCheckbox(this)">
+<input type="checkbox" value="Mélasma"> Mélasma
+</div>
+<div class="checkbox-item" onclick="toggleCheckbox(this)">
+<input type="checkbox" value="Autre"> Autre
+</div>
+</div>
+</div>
+
+<div class="form-group">
+<label>Allergies Médicamenteuses</label>
+<textarea id="drugAllergies" placeholder="Listez vos allergies médicamenteuses (ex: Pénicilline, Aspirine...)"></textarea>
+</div>
+
+<div class="form-group">
+<label>Traitements Dermatologiques en Cours</label>
+<textarea id="currentTreatments" placeholder="Décrivez vos traitements actuels (ex: corticostéroïdes topiques, isotrétinoïne...)"></textarea>
+</div>
+
+<div class="form-group">
+<label>Type de Peau</label>
+<select id="skinType">
+<option value="">Sélectionnez votre type de peau</option>
+<option value="Normale">Normale</option>
+<option value="Sèche">Sèche</option>
+<option value="Grasse">Grasse</option>
+<option value="Mixte">Mixte</option>
+<option value="Sensible">Sensible</option>
+</select>
+</div>
+
+<div class="form-group">
+<label>Phototype de Fitzpatrick</label>
+<select id="fitzpatrickType">
+<option value="">Sélectionnez votre phototype</option>
+<option value="Type I">Type I - Peau très claire, brûle toujours, ne bronze jamais</option>
+<option value="Type II">Type II - Peau claire, brûle facilement, bronze difficilement</option>
+<option value="Type III">Type III - Peau claire à moyenne, brûle modérément, bronze graduellement</option>
+<option value="Type IV">Type IV - Peau olive/brune claire, brûle rarement, bronze facilement</option>
+<option value="Type V">Type V - Peau brune, brûle très rarement, bronze très facilement</option>
+<option value="Type VI">Type VI - Peau noire, ne brûle jamais, toujours pigmentée</option>
+</select>
+</div>
+
+<div class="form-group">
+<label>Maladies Chroniques Associées</label>
+<div class="checkbox-group" id="chronicDiseasesGroup">
+<div class="checkbox-item" onclick="toggleCheckbox(this)">
+<input type="checkbox" value="Diabète"> Diabète
+</div>
+<div class="checkbox-item" onclick="toggleCheckbox(this)">
+<input type="checkbox" value="Lupus"> Lupus
+</div>
+<div class="checkbox-item" onclick="toggleCheckbox(this)">
+<input type="checkbox" value="Rhumatisme Psoriasique"> Rhumatisme Psoriasique
+</div>
+<div class="checkbox-item" onclick="toggleCheckbox(this)">
+<input type="checkbox" value="Maladie Thyroïdienne"> Maladie Thyroïdienne
+</div>
+<div class="checkbox-item" onclick="toggleCheckbox(this)">
+<input type="checkbox" value="Maladie Auto-immune"> Maladie Auto-immune
+</div>
+<div class="checkbox-item" onclick="toggleCheckbox(this)">
+<input type="checkbox" value="Autre"> Autre
+</div>
+</div>
+</div>
+
+<div class="form-group">
+<label>Antécédents Familiaux de Maladies Cutanées</label>
+<textarea id="familyHistory" placeholder="Décrivez les antécédents familiaux de maladies de peau..."></textarea>
+</div>
+
+<div class="form-group">
+<label>Tabagisme / Consommation d'Alcool</label>
+<select id="smokingAlcohol">
+<option value="">Sélectionnez</option>
+<option value="Oui">Oui</option>
+<option value="Non">Non</option>
+</select>
+</div>
+
+<div class="form-group">
+<label>Exposition Professionnelle aux Produits Chimiques ou Irritants</label>
+<textarea id="occupationalExposure" placeholder="Décrivez votre exposition professionnelle..."></textarea>
+</div>
+
+<div style="display: flex; gap: 10px;">
+<button type="button" class="btn-secondary" onclick="goBackToStep1()" style="flex: 0 0 auto; padding: 16px 30px; width: auto;">
+<i class="fas fa-arrow-left"></i> Retour
+</button>
+<button type="submit" class="register-btn" style="flex: 1;" id="dermatologySubmitBtn">
+<i class="fas fa-check"></i> Terminer l'Inscription
+</button>
+</div>
 </form>
 </div>
 
@@ -347,40 +569,18 @@ Vous avez déjà un compte ? <a href="connexion.html">Se Connecter</a>
 </div>
 
 <script>
-let selectedSubscriptions = {
-    patient: 'standard'
-};
+let selectedSubscriptions = { patient: 'standard' };
+let registeredUserId = null;
 
-const roleConfig = {
-    patient: {
-        name: 'Patient',
-        icon: 'fa-user',
-        defaultPlan: 'standard'
-    }
-};
+const API_BASE = 'http://localhost:8000';
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Always show patient form
-    showRoleForm('patient');
+    document.getElementById('step1').classList.add('active');
 });
-
-function showRoleForm(role) {
-    document.querySelectorAll('.form-section').forEach(section => {
-        section.style.display = 'block';
-    });
-    if (roleConfig[role]) {
-        document.title = `Créer un Compte ${roleConfig[role].name} - DermaFlow AI`;
-    }
-}
-
-function selectSubscription(card, plan) {
-    // Forfait par défaut standard, ne change pas
-}
 
 function checkPasswordStrength(input) {
     const password = input.value;
-    const role = input.id.replace('Password', '');
-    const strengthBar = document.getElementById(role + 'PasswordStrength');
+    const strengthBar = document.getElementById('patientPasswordStrength');
     let strength = 0;
     if (password.length > 5) strength++;
     if (password.length > 8) strength++;
@@ -397,35 +597,77 @@ function checkPasswordStrength(input) {
     }
 }
 
-const API_BASE = 'http://localhost:8000';
+function toggleCheckbox(el) {
+    const checkbox = el.querySelector('input[type="checkbox"]');
+    checkbox.checked = !checkbox.checked;
+    el.classList.toggle('selected');
+}
 
-async function handleRegister(event, role) {
+function getSelectedCheckboxes(containerId) {
+    const container = document.getElementById(containerId);
+    const checkboxes = container.querySelectorAll('input[type="checkbox"]:checked');
+    return Array.from(checkboxes).map(cb => cb.value).join(', ');
+}
+
+function showStep(step) {
+    document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
+    document.getElementById('step' + step).classList.add('active');
+    const dots = {
+        1: document.getElementById('step1Dot'),
+        2: document.getElementById('step2Dot'),
+    };
+    const line = document.getElementById('step1Line');
+    if (step === 1) {
+        dots[1].className = 'step-dot active';
+        dots[2].className = 'step-dot pending';
+        line.className = 'step-line';
+        document.getElementById('formTitle').textContent = 'Créer Votre Compte';
+        document.getElementById('formSubtitle').textContent = 'Étape 1 sur 2 : Informations personnelles';
+    } else if (step === 2) {
+        dots[1].className = 'step-dot completed';
+        dots[2].className = 'step-dot active';
+        line.className = 'step-line completed';
+        document.getElementById('formTitle').textContent = 'Profil Dermatologique';
+        document.getElementById('formSubtitle').textContent = 'Étape 2 sur 2 : Informations médicales';
+    }
+}
+
+function goBackToStep1() {
+    showStep(1);
+}
+
+async function handleStep1(event) {
     event.preventDefault();
-    const passwordField = document.getElementById(role + 'Password');
-    const confirmField = document.getElementById(role + 'ConfirmPassword');
-    if (passwordField.value !== confirmField.value) {
+    const password = document.getElementById('patientPassword').value;
+    const confirm = document.getElementById('patientConfirmPassword').value;
+    if (password !== confirm) {
         alert('Les mots de passe ne correspondent pas !');
         return;
     }
-    if (passwordField.value.length < 6) {
+    if (password.length < 6) {
         alert('Le mot de passe doit contenir au moins 6 caractères !');
+        return;
+    }
+    if (!document.getElementById('patientTerms').checked) {
+        alert('Vous devez accepter les conditions d\'utilisation.');
         return;
     }
     const btn = event.target.querySelector('.register-btn');
     btn.disabled = true;
     btn.textContent = 'Création du Compte...';
     const formData = {
-        role: role,
-        subscription: selectedSubscriptions[role],
-        first_name: document.getElementById(role + 'FirstName').value,
-        last_name: document.getElementById(role + 'LastName').value,
-        email: document.getElementById(role + 'Email').value,
-        phone: document.getElementById(role + 'Phone').value,
-        password: passwordField.value,
+        role: 'patient',
+        subscription: 'standard',
+        first_name: document.getElementById('patientFirstName').value,
+        last_name: document.getElementById('patientLastName').value,
+        email: document.getElementById('patientEmail').value,
+        phone: document.getElementById('patientPhone').value,
+        password: password,
+        date_of_birth: document.getElementById('patientDOB').value,
+        gender: document.getElementById('patientGender').value,
+        city: document.getElementById('patientCity').value,
+        address: document.getElementById('patientAddress').value,
     };
-    if (role === 'patient') {
-        formData.date_of_birth = document.getElementById('patientDOB').value;
-    }
     try {
         const response = await fetch(API_BASE + '/auth/register', {
             method: 'POST',
@@ -442,18 +684,56 @@ async function handleRegister(event, role) {
         localStorage.setItem('first_name', data.first_name);
         localStorage.setItem('last_name', data.last_name);
         localStorage.setItem('email', data.email);
+        registeredUserId = data.user_id;
+        showStep(2);
+        btn.disabled = false;
+        btn.textContent = 'Créer mon Compte';
+    } catch (error) {
+        alert(error.message);
+        btn.disabled = false;
+        btn.textContent = 'Créer mon Compte';
+    }
+}
+
+async function handleStep2(event) {
+    event.preventDefault();
+    const btn = document.getElementById('dermatologySubmitBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enregistrement...';
+    const formData = {
+        skin_conditions: getSelectedCheckboxes('skinConditionsGroup') || null,
+        drug_allergies: document.getElementById('drugAllergies').value || null,
+        current_treatments: document.getElementById('currentTreatments').value || null,
+        skin_type: document.getElementById('skinType').value || null,
+        fitzpatrick_phototype: document.getElementById('fitzpatrickType').value || null,
+        chronic_diseases: getSelectedCheckboxes('chronicDiseasesGroup') || null,
+        family_history: document.getElementById('familyHistory').value || null,
+        smoking_alcohol: document.getElementById('smokingAlcohol').value || null,
+        occupational_exposure: document.getElementById('occupationalExposure').value || null,
+    };
+    try {
+        const token = localStorage.getItem('access_token');
+        const response = await fetch(API_BASE + '/patients/dermatology-profile/upsert', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token,
+            },
+            body: JSON.stringify(formData),
+        });
+        if (!response.ok) {
+            const errData = await response.json();
+            throw new Error(errData.detail || 'Échec de l\'enregistrement du profil');
+        }
         const successMsg = document.getElementById('successMessage');
         successMsg.style.display = 'block';
-        const dashboardMap = {
-            patient: 'tableau_bord_patient.html',
-        };
         setTimeout(() => {
-            window.location.href = dashboardMap[role] || 'connexion.html';
+            window.location.href = 'tableau_bord_patient.html';
         }, 1500);
     } catch (error) {
         alert(error.message);
         btn.disabled = false;
-        btn.textContent = 'Créer un Compte Patient';
+        btn.innerHTML = '<i class="fas fa-check"></i> Terminer l\'Inscription';
     }
 }
 </script>

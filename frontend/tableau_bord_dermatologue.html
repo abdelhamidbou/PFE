@@ -91,7 +91,6 @@ border-bottom: 3px solid var(--primary);
     from {
         opacity: 0;
     }
-
     to {
         opacity: 1;
     }
@@ -204,6 +203,28 @@ outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(8, 145, 
 .form-actions { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
 .form-actions .btn { padding: 10px 20px; }
 .form-error { font-size: 0.8rem; color: var(--urgent-red); margin-top: 4px; }
+
+/* Modal styles */
+.modal-overlay {
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+    z-index: 1000; justify-content: center; align-items: center;
+}
+.modal-overlay.active { display: flex; }
+.modal-content {
+    background: white; border-radius: 16px; max-width: 750px; width: 95%;
+    max-height: 90vh; overflow-y: auto; padding: 30px;
+}
+.modal-header {
+    display: flex; justify-content: space-between; align-items: center;
+    border-bottom: 1px solid var(--border); padding-bottom: 15px; margin-bottom: 20px;
+}
+.modal-header h3 { margin: 0; color: var(--primary); }
+.modal-close { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #64748b; }
+
+.dossier-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f1f5f9; }
+.dossier-item:last-child { border-bottom: none; }
+.dossier-label { color: #64748b; font-weight: 500; }
+.dossier-value { color: #1e293b; font-weight: 600; text-align: right; max-width: 60%; }
 </style>
 </head>
 
@@ -213,8 +234,8 @@ outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(8, 145, 
         <div class="doctor-profile">
             <img src="https://img.icons8.com/color/96/doctor-male-skin-type-4.png" alt="Docteur">
             <div>
-                <h2 style="margin:0">Dr. ---</h2>
-                <small>Spécialité: --- | Cabinet ---</small>
+                <h2 style="margin:0" id="docName">Dr. ---</h2>
+                <small id="docInfo">Spécialité: --- | Cabinet ---</small>
             </div>
         </div>
         <button class="btn btn-outline" onclick="window.location.href='accueil.html'">Déconnexion</button>
@@ -234,27 +255,27 @@ outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(8, 145, 
                     <div style="display:flex; justify-content:space-between; align-items:start;">
                         <div>
                             <span style="color:var(--primary); font-weight:bold;">EN COURS</span>
-                            <h2 style="margin:5px 0;">---</h2>
-                            <p><b>Âge:</b> --- | <b>Motif:</b> ---</p>
+                            <h2 style="margin:5px 0;" id="currentPatientName">---</h2>
+                            <p id="currentPatientInfo"><b>Âge:</b> --- | <b>Motif:</b> ---</p>
                         </div>
                         <div style="text-align:right;">
-                            <div class="badge bg-urgent" style="font-size:1rem; padding:8px 15px;">URGENT (IA)</div>
+                            <div class="badge bg-urgent" style="font-size:1rem; padding:8px 15px;" id="currentPatientPriority">URGENT (IA)</div>
                         </div>
                     </div>
 
                     <div class="ia-box">
                         <strong>Analyse IA Prédictive:</strong>
                         <ul style="margin:5px 0; font-size:0.9rem;">
-                            <li>Durée estimée de consultation: <b>---</b></li>
-                            <li>Niveau de priorité: <b>---</b></li>
-                            <li>Analyse image (Dermatosocopie): <span style="color:var(--urgent-red);">---</span></li>
+                            <li>Durée estimée de consultation: <b id="iaDuree">---</b></li>
+                            <li>Niveau de priorité: <b id="iaPriorite">---</b></li>
+                            <li>Analyse image (Dermatosocopie): <span style="color:var(--urgent-red);" id="iaAnalyse">---</span></li>
                         </ul>
                     </div>
 
-                    <div style="margin-top:20px; display:flex; gap:10px;">
+                    <div style="margin-top:20px; display:flex; gap:10px; flex-wrap:wrap;">
                         <button class="btn btn-start">Commencer Consultation</button>
                         <button class="btn btn-stop">Terminer & Ordonnance</button>
-                        <button class="btn" style="background:#64748b; color:white;">Dossier Médical</button>
+                        <button class="btn" style="background:#64748b; color:white;" onclick="openPatientDossier()">Dossier Médical</button>
                     </div>
                 </div>
 
@@ -294,24 +315,18 @@ outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(8, 145, 
                     <div class="card-header">
                         <h3>Prochains Patients</h3>
                     </div>
-                    <div class="waiting-item">
-                        <div><b>#--</b> ---<br><small>--:-- - ---</small></div>
-                        <span class="badge bg-normal">---</span>
-                    </div>
-                    <div class="waiting-item">
-                        <div><b>#--</b> ---<br><small>--:-- - ---</small></div>
-                        <span class="badge bg-normal">---</span>
-                    </div>
-                    <div class="waiting-item" style="background:#fff5f5;">
-                        <div><b>#--</b> ---<br><small>--:-- - ---</small></div>
-                        <span class="badge bg-urgent">---</span>
+                    <div id="waitingList">
+                        <div class="waiting-item">
+                            <div><b>#001</b> Patient Exemple<br><small>10:30 - Consultation Générale</small></div>
+                            <span class="badge bg-normal">Normal</span>
+                        </div>
                     </div>
                 </div>
 
                 <div class="card" style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color:white;">
                     <h4 style="margin-top:0;">Temps Global</h4>
-                    <p>Retard estimé: <b>---</b></p>
-                    <small>---</small>
+                    <p>Retard estimé: <b id="globalDelay">---</b></p>
+                    <small id="globalInfo">---</small>
                 </div>
             </div>
 
@@ -353,21 +368,171 @@ outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(8, 145, 
         </div>
     </div>
 
+    <!-- Modal Dossier Patient -->
+    <div class="modal-overlay" id="patientDossierModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-file-medical"></i> Dossier Médical du Patient</h3>
+                <button class="modal-close" onclick="closePatientDossier()">&times;</button>
+            </div>
+            <div id="dossierContent">
+                <p style="color: #94a3b8; text-align: center;">Chargement...</p>
+            </div>
+        </div>
+    </div>
+
     <script>
+        const API_BASE = 'http://localhost:8000';
+        let currentPatientId = null;
+
+        function getToken() { return localStorage.getItem('access_token'); }
+
         function switchTab(tabId, el) {
             document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
             el.classList.add('active');
         }
+
         document.getElementById('formNotesConsultation').addEventListener('submit', function(e) {
             e.preventDefault();
             console.log('Notes enregistrées', { motif: document.getElementById('motif').value, observations: document.getElementById('observations').value });
             alert('Notes de consultation enregistrées.');
+        });
+
+        async function loadDoctorInfo() {
+            const token = getToken();
+            if (!token) return;
+            try {
+                const res = await fetch(API_BASE + '/doctors/me', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    document.getElementById('docName').textContent = 'Dr. ' + data.first_name + ' ' + data.last_name;
+                    document.getElementById('docInfo').textContent = 'Spécialité: ' + (data.specialization || '---') + ' | Cabinet ' + (data.cabinet || '---');
+                }
+            } catch (e) {
+                console.error('Failed to load doctor info', e);
+            }
+        }
+
+        async function loadTodayAppointments() {
+            const token = getToken();
+            if (!token) return;
+            try {
+                const res = await fetch(API_BASE + '/appointments/today', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                if (res.ok) {
+                    const appointments = await res.json();
+                    if (appointments.length > 0) {
+                        const first = appointments[0];
+                        currentPatientId = first.patient_id;
+                        document.getElementById('currentPatientName').textContent = 'Patient #' + first.patient_id;
+                        document.getElementById('currentPatientInfo').innerHTML = '<b>Motif:</b> ' + (first.reason || 'Non spécifié');
+                        document.getElementById('currentPatientPriority').textContent = first.priority === 'urgent' ? 'URGENT' : 'Normal';
+                        if (first.priority !== 'urgent') {
+                            document.getElementById('currentPatientPriority').className = 'badge bg-normal';
+                        }
+
+                        // Load full patient info
+                        loadPatientFullInfo(first.patient_id);
+                    }
+                }
+            } catch (e) {
+                console.log('No appointments loaded', e);
+            }
+        }
+
+        async function loadPatientFullInfo(patientId) {
+            const token = getToken();
+            if (!token) return;
+            try {
+                const res = await fetch(API_BASE + '/patients/' + patientId + '/info', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    const fullName = (data.first_name || '---') + ' ' + (data.last_name || '---');
+                    const age = data.date_of_birth ? calculateAge(data.date_of_birth) : '---';
+                    document.getElementById('currentPatientName').textContent = fullName;
+                    document.getElementById('currentPatientInfo').innerHTML = '<b>Âge:</b> ' + age + ' | <b>Motif:</b> ' + (document.querySelector('#motif')?.value || 'Non spécifié');
+                }
+            } catch (e) {
+                console.error('Failed to load patient info', e);
+            }
+        }
+
+        function calculateAge(dateStr) {
+            const birth = new Date(dateStr);
+            const today = new Date();
+            let age = today.getFullYear() - birth.getFullYear();
+            const m = today.getMonth() - birth.getMonth();
+            if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
+            return age + ' ans';
+        }
+
+        async function openPatientDossier() {
+            document.getElementById('patientDossierModal').classList.add('active');
+            document.getElementById('dossierContent').innerHTML = '<p style="color: #94a3b8; text-align: center;">Chargement...</p>';
+
+            if (!currentPatientId) {
+                document.getElementById('dossierContent').innerHTML = '<p style="color: #ef4444; text-align: center;">Aucun patient sélectionné.</p>';
+                return;
+            }
+
+            const token = getToken();
+            try {
+                const res = await fetch(API_BASE + '/patients/' + currentPatientId + '/info', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                if (!res.ok) throw new Error('Impossible de charger le dossier');
+                const data = await res.json();
+
+                let html = '<div style="margin-bottom: 20px;">';
+                html += '<h4 style="color: var(--primary); margin-bottom: 15px;"><i class="fas fa-user"></i> Informations Personnelles</h4>';
+                html += '<div class="dossier-item"><span class="dossier-label">Nom complet</span><span class="dossier-value">' + (data.first_name || '---') + ' ' + (data.last_name || '---') + '</span></div>';
+                html += '<div class="dossier-item"><span class="dossier-label">Email</span><span class="dossier-value">' + (data.email || '---') + '</span></div>';
+                html += '<div class="dossier-item"><span class="dossier-label">Téléphone</span><span class="dossier-value">' + (data.phone || '---') + '</span></div>';
+                html += '<div class="dossier-item"><span class="dossier-label">Date de naissance</span><span class="dossier-value">' + (data.date_of_birth || '---') + '</span></div>';
+                html += '<div class="dossier-item"><span class="dossier-label">Genre</span><span class="dossier-value">' + (data.gender || '---') + '</span></div>';
+                html += '<div class="dossier-item"><span class="dossier-label">Ville</span><span class="dossier-value">' + (data.city || '---') + '</span></div>';
+                html += '<div class="dossier-item"><span class="dossier-label">Adresse</span><span class="dossier-value">' + (data.address || '---') + '</span></div>';
+                html += '<div class="dossier-item"><span class="dossier-label">Groupe sanguin</span><span class="dossier-value">' + (data.blood_group || '---') + '</span></div>';
+                html += '</div>';
+
+                if (data.skin_conditions || data.skin_type || data.fitzpatrick_phototype || data.drug_allergies || data.current_treatments) {
+                    html += '<h4 style="color: var(--primary); margin: 20px 0 15px 0;"><i class="fas fa-file-medical"></i> Profil Dermatologique</h4>';
+                    html += '<div class="dossier-item"><span class="dossier-label">Conditions Cutanées</span><span class="dossier-value">' + (data.skin_conditions || '---') + '</span></div>';
+                    html += '<div class="dossier-item"><span class="dossier-label">Allergies Médicamenteuses</span><span class="dossier-value">' + (data.drug_allergies || '---') + '</span></div>';
+                    html += '<div class="dossier-item"><span class="dossier-label">Traitements en Cours</span><span class="dossier-value">' + (data.current_treatments || '---') + '</span></div>';
+                    html += '<div class="dossier-item"><span class="dossier-label">Type de Peau</span><span class="dossier-value">' + (data.skin_type || '---') + '</span></div>';
+                    html += '<div class="dossier-item"><span class="dossier-label">Phototype Fitzpatrick</span><span class="dossier-value">' + (data.fitzpatrick_phototype || '---') + '</span></div>';
+                    html += '<div class="dossier-item"><span class="dossier-label">Maladies Chroniques</span><span class="dossier-value">' + (data.chronic_diseases || '---') + '</span></div>';
+                    html += '<div class="dossier-item"><span class="dossier-label">Antécédents Familiaux</span><span class="dossier-value">' + (data.family_history || '---') + '</span></div>';
+                    html += '<div class="dossier-item"><span class="dossier-label">Tabac/Alcool</span><span class="dossier-value">' + (data.smoking_alcohol || '---') + '</span></div>';
+                    html += '<div class="dossier-item"><span class="dossier-label">Exposition Professionnelle</span><span class="dossier-value">' + (data.occupational_exposure || '---') + '</span></div>';
+                } else {
+                    html += '<p style="color: #94a3b8; text-align: center; margin-top: 20px;">Aucun profil dermatologique renseigné par le patient.</p>';
+                }
+
+                document.getElementById('dossierContent').innerHTML = html;
+            } catch (e) {
+                document.getElementById('dossierContent').innerHTML = '<p style="color: #ef4444; text-align: center;">Erreur: ' + e.message + '</p>';
+            }
+        }
+
+        function closePatientDossier() {
+            document.getElementById('patientDossierModal').classList.remove('active');
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDoctorInfo();
+            loadTodayAppointments();
         });
     </script>
 
 </body>
 
 </html>
-</code>

@@ -13,6 +13,9 @@ class User(Base):
     first_name = Column(String, nullable=False)
     last_name = Column(String, nullable=False)
     phone = Column(String, nullable=True)
+    gender = Column(String, nullable=True)
+    city = Column(String, nullable=True)
+    address = Column(Text, nullable=True)
     subscription = Column(String, default="basic")
     is_active = Column(Integer, default=1)
     created_at = Column(DateTime, server_default=func.now())
@@ -27,6 +30,24 @@ class Patient(Base):
     blood_group = Column(String, nullable=True)
     allergies = Column(Text, nullable=True)
     skin_conditions = Column(Text, nullable=True)
+
+
+class DermatologyProfile(Base):
+    __tablename__ = "dermatology_profiles"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), unique=True, nullable=False)
+    skin_conditions = Column(Text, nullable=True)
+    drug_allergies = Column(Text, nullable=True)
+    current_treatments = Column(Text, nullable=True)
+    skin_type = Column(String, nullable=True)
+    fitzpatrick_phototype = Column(String, nullable=True)
+    chronic_diseases = Column(Text, nullable=True)
+    family_history = Column(Text, nullable=True)
+    smoking_alcohol = Column(String, nullable=True)
+    occupational_exposure = Column(Text, nullable=True)
+    created_at = Column(DateTime, server_default=func.now())
+    updated_at = Column(DateTime, onupdate=func.now())
 
 
 class Doctor(Base):

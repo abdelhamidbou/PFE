@@ -182,11 +182,11 @@
         <div class="nurse-profile">
             <img src="https://img.icons8.com/color/96/nurse-female.png" alt="Infirmier">
             <div>
-                <h2 style="margin:0">Inf. ---</h2>
-                <small>Infirmier(ère) | Service ---</small>
+                <h2 id="nurseName" style="margin:0">Chargement...</h2>
+                <small id="nurseRole">Infirmier(ère) | Service ---</small>
             </div>
         </div>
-        <button class="btn btn-outline" onclick="window.location.href='accueil.html'">Déconnexion</button>
+        <button class="btn btn-outline" onclick="logout()">Déconnexion</button>
     </header>
 
     <nav>
@@ -201,19 +201,21 @@
             <div>
                 <div class="card" style="background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%); color: white;">
                     <h4 style="margin-top:0; color: white;">Bienvenue dans l'espace Infirmier</h4>
-                    <p>Utilisez les onglets ci-dessus pour naviguer entre les différentes sections.<br>Cette page est prête pour l'ajout de vos modèles.</p>
+                    <p id="welcomeMsg">Préparez votre journée et gérez vos patients.</p>
                 </div>
                 <div class="card">
-                    <div class="card-header"><h3><i class="fas fa-info-circle"></i> Informations Générales</h3></div>
-                    <p style="color:#64748b;">Cette section est réservée au contenu spécifique à l'espace infirmier. Vous pouvez y ajouter des widgets, des statistiques ou d'autres informations pertinentes.</p>
+                    <div class="card-header"><h3><i class="fas fa-calendar-day"></i> Rendez-vous d'Aujourd'hui</h3></div>
+                    <div id="todayAppointments">
+                        <p style="color:#64748b; text-align:center;">Chargement des rendez-vous...</p>
+                    </div>
                 </div>
             </div>
             <div>
                 <div class="card">
                     <div class="card-header"><h3>Résumé</h3></div>
-                    <div style="text-align:center; padding:20px;">
+                    <div id="statsSummary" style="text-align:center; padding:20px;">
                         <div style="font-size:2rem; font-weight:bold; color: var(--primary);">---</div>
-                        <small>En cours de développement</small>
+                        <small>En cours de chargement</small>
                     </div>
                 </div>
             </div>
@@ -224,10 +226,21 @@
     <div id="patients" class="container">
         <div class="card">
             <div class="card-header"><h3><i class="fas fa-user-injured"></i> Liste des Patients</h3></div>
-            <div style="text-align:center; padding:60px 20px; color:#94a3b8;">
-                <i class="fas fa-users" style="font-size:4rem; color:#e2e8f0; margin-bottom:20px;"></i>
-                <h4>Gestion des Patients</h4>
-                <p>Cette section sera développée prochainement par votre équipe.</p>
+            <div style="overflow-x:auto;">
+                <table style="width:100%; border-collapse: collapse; text-align:left; font-size:0.9rem;">
+                    <thead>
+                        <tr style="border-bottom: 2px solid var(--border); color:#64748b;">
+                            <th style="padding:12px;">Nom</th>
+                            <th style="padding:12px;">Email</th>
+                            <th style="padding:12px;">Téléphone</th>
+                            <th style="padding:12px;">Groupe Sanguin</th>
+                            <th style="padding:12px;">Allergies</th>
+                        </tr>
+                    </thead>
+                    <tbody id="patientsList">
+                        <tr><td colspan="5" style="text-align:center; padding:20px; color:#94a3b8;">Chargement des patients...</td></tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -245,12 +258,109 @@
     </div>
 
     <script>
+        const API_BASE = 'http://localhost:8000';
+        const token = localStorage.getItem('access_token');
+
+        if (!token) {
+            window.location.href = 'connexion.html';
+        }
+
+        async function fetchWithAuth(endpoint, options = {}) {
+            const headers = {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+                ...options.headers
+            };
+            const response = await fetch(API_BASE + endpoint, { ...options, headers });
+            if (response.status === 401) {
+                logout();
+            }
+            return response;
+        }
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = 'connexion.html';
+        }
+
+        async function loadUserInfo() {
+            try {
+                const response = await fetchWithAuth('/auth/me');
+                const user = await response.json();
+                document.getElementById('nurseName').textContent = `Inf. ${user.first_name} ${user.last_name}`;
+                document.getElementById('welcomeMsg').textContent = `Bienvenue, ${user.first_name}. Préparez votre journée et gérez vos patients.`;
+            } catch (e) {
+                console.error('Error loading user info:', e);
+            }
+        }
+
+        async function loadTodayAppointments() {
+            try {
+                const response = await fetchWithAuth('/appointments/today');
+                const appts = await response.json();
+                const container = document.getElementById('todayAppointments');
+
+                if (appts.length === 0) {
+                    container.innerHTML = '<p style="text-align:center; color:#64748b;">Aucun rendez-vous pour aujourd\'hui.</p>';
+                    return;
+                }
+
+                let html = '<table style="width:100%; border-collapse: collapse; font-size:0.85rem;">';
+                html += '<thead style="background:#f8fafc; text-align:left;"><tr><th style="padding:8px;">Patient</th><th style="padding:8px;">Heure</th><th style="padding:8px;">Statut</th></tr></thead><tbody>';
+                
+                for (const a of appts) {
+                    html += `<tr style="border-bottom:1px solid #f1f5f9;">
+                        <td style="padding:8px;">Patient #${a.patient_id}</td>
+                        <td style="padding:8px;">${a.appointment_time}</td>
+                        <td style="padding:8px;"><span style="background:#e2e8f0; padding:2px 6px; border-radius:4px;">${a.status}</span></td>
+                    </tr>`;
+                }
+                html += '</tbody></table>';
+                container.innerHTML = html;
+            } catch (e) {
+                document.getElementById('todayAppointments').innerHTML = '<p style="color:red; text-align:center;">Erreur de chargement</p>';
+            }
+        }
+
+        async function loadPatients() {
+            try {
+                const response = await fetchWithAuth('/patients/');
+                const patients = await response.json();
+                const list = document.getElementById('patientsList');
+
+                if (patients.length === 0) {
+                    list.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:20px; color:#94a3b8;">Aucun patient trouvé.</td></tr>';
+                    return;
+                }
+
+                let html = '';
+                for (const p of patients) {
+                    html += `<tr style="border-bottom: 1px solid #f1f5f9;">
+                        <td style="padding:12px;">${p.first_name} ${p.last_name}</td>
+                        <td style="padding:12px;">${p.email}</td>
+                        <td style="padding:12px;">${p.phone || 'N/A'}</td>
+                        <td style="padding:12px;">${p.blood_group || 'N/A'}</td>
+                        <td style="padding:12px;">${p.allergies || 'Aucune'}</td>
+                    </tr>`;
+                }
+                list.innerHTML = html;
+            } catch (e) {
+                document.getElementById('patientsList').innerHTML = '<tr><td colspan="5" style="text-align:center; padding:20px; color:red;">Erreur de chargement des patients</td></tr>';
+            }
+        }
+
         function switchTab(tabId, el) {
             document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
             el.classList.add('active');
+            
+            if (tabId === 'patients') loadPatients();
         }
+
+        // Initial load
+        loadUserInfo();
+        loadTodayAppointments();
     </script>
 
 </body>
