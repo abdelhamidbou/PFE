@@ -44,11 +44,12 @@ def health_check():
 @app.post("/auth/register", status_code=status.HTTP_201_CREATED)
 def register_user(user_data: dict, db: Session = Depends(database.get_db)):
     role = user_data.get("role")
+    # Only patients can self-register via the site
     if role != "patient":
-        raise HTTPException(status_code=403, detail="Seuls les patients peuvent s'inscrire.")
+        raise HTTPException(status_code=403, detail="Seuls les patients peuvent s'inscrire via le site.")
 
-    if role not in ["patient", "doctor", "receptionist", "admin"]:
-        raise HTTPException(status_code=400, detail="Rôle invalide. Doit être : patient, doctor, receptionist, ou admin")
+    if role not in ["patient", "doctor", "receptionist", "admin", "infermier"]:
+        raise HTTPException(status_code=400, detail="Rôle invalide. Doit être : patient, doctor, receptionist, admin, ou infermier")
 
     email = user_data.get("email")
     existing = db.query(models.User).filter(models.User.email == email).first()
@@ -103,6 +104,16 @@ def register_user(user_data: dict, db: Session = Depends(database.get_db)):
         )
         db.add(admin)
 
+    elif role == "infermier":
+        infermier = models.Nurse(
+            user_id=user.id,
+            employee_id=user_data.get("employee_id", ""),
+            department=user_data.get("department"),
+            shift=user_data.get("shift", "morning"),
+            specialization=user_data.get("specialization"),
+        )
+        db.add(infermier)
+
     db.commit()
 
     access_token = auth.create_access_token(data={"sub": str(user.id), "role": user.role})
@@ -128,9 +139,7 @@ def login_user(login_data: schemas.LoginRequest, db: Session = Depends(database.
     if not auth.verify_password(login_data.password, user.password_hash):
         raise HTTPException(status_code=401, detail="Email ou mot de passe invalide")
 
-    if user.role != "patient":
-        raise HTTPException(status_code=403, detail="Seuls les patients peuvent se connecter.")
-
+    # Allow all roles to login (patient, doctor, receptionist, admin, infermier)
     if user.role != login_data.role:
         raise HTTPException(status_code=403, detail=f"Ce compte n'est pas un compte {login_data.role}")
 
@@ -173,10 +182,12 @@ def get_user_stats(db: Session = Depends(database.get_db)):
     doctors_count = db.query(models.User).filter(models.User.role == "doctor").count()
     receptionists_count = db.query(models.User).filter(models.User.role == "receptionist").count()
     admins_count = db.query(models.User).filter(models.User.role == "admin").count()
+    infermiers_count = db.query(models.User).filter(models.User.role == "infermier").count()
     return {
         "total_users": total,
         "patients": patients_count,
         "doctors": doctors_count,
         "receptionists": receptionists_count,
         "admins": admins_count,
+        "infermiers": infermiers_count,
     }

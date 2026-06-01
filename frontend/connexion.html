@@ -87,7 +87,7 @@
             margin-bottom: 8px;
             color: #334155;
         }
-        .form-group input {
+        .form-group input, .form-group select {
             width: 100%;
             padding: 14px 16px;
             border: 2px solid #e2e8f0;
@@ -96,8 +96,9 @@
             font-family: inherit;
             transition: border-color 0.3s;
             outline: none;
+            background: white;
         }
-        .form-group input:focus {
+        .form-group input:focus, .form-group select:focus {
             border-color: #0891b2;
         }
         .login-btn {
@@ -117,6 +118,39 @@
         .login-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 15px 35px rgba(8, 145, 178, 0.4);
+        }
+        .role-selector {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+        .role-btn {
+            flex: 1;
+            min-width: 110px;
+            padding: 10px 14px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            background: white;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #64748b;
+            transition: all 0.3s;
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .role-btn:hover {
+            border-color: #0891b2;
+            color: #0891b2;
+        }
+        .role-btn.active {
+            border-color: #0891b2;
+            background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%);
+            color: white;
         }
         .divider {
             display: flex;
@@ -155,12 +189,20 @@
             gap: 8px;
         }
         .back-home:hover { color: #0891b2; }
+        .login-subtitle {
+            font-size: 0.95rem;
+            color: #64748b;
+            margin-bottom: 25px;
+            text-align: center;
+        }
         @media (max-width: 768px) {
             .login-container { flex-direction: column; margin: 20px; }
             .login-left { padding: 40px 30px; }
             .login-right { padding: 40px 30px; }
             .back-home { position: static; margin-bottom: 20px; padding: 0 20px; }
             body { padding: 0; }
+            .role-selector { gap: 6px; }
+            .role-btn { min-width: auto; font-size: 0.8rem; padding: 8px 10px; }
         }
     </style>
 </head>
@@ -169,7 +211,7 @@
     <div class="login-container">
         <div class="login-left">
             <h1>Bienvenue sur DermaFlow AI</h1>
-            <p>Accédez à votre portail dermatologique personnalisé. Connectez-vous en tant que patient pour accéder à vos dossiers en toute sécurité.</p>
+            <p>Accédez à votre portail dermatologique personnalisé. Connectez-vous en toute sécurité en fonction de votre rôle.</p>
             <div class="login-left-features">
                 <div class="feature">
                     <i class="fas fa-lock"></i>
@@ -190,29 +232,72 @@
             </div>
         </div>
         <div class="login-right">
-            <div id="patient-form" class="role-section">
+            <div class="login-subtitle">Sélectionnez votre rôle et connectez-vous</div>
+            <div class="role-selector">
+                <button class="role-btn active" data-role="patient" onclick="selectRole(this, 'patient')">
+                    <i class="fas fa-user"></i> Patient
+                </button>
+                <button class="role-btn" data-role="doctor" onclick="selectRole(this, 'doctor')">
+                    <i class="fas fa-user-md"></i> Docteur
+                </button>
+                <button class="role-btn" data-role="receptionist" onclick="selectRole(this, 'receptionist')">
+                    <i class="fas fa-user-clock"></i> Réception
+                </button>
+                <button class="role-btn" data-role="infermier" onclick="selectRole(this, 'infermier')">
+                    <i class="fas fa-user-nurse"></i> Infirmier
+                </button>
+                <button class="role-btn" data-role="admin" onclick="selectRole(this, 'admin')">
+                    <i class="fas fa-user-shield"></i> Admin
+                </button>
+            </div>
+            <div id="login-form">
                 <div class="form-group">
                     <label>Adresse Email</label>
-                    <input type="email" id="patientEmail" placeholder="Entrez votre email">
+                    <input type="email" id="loginEmail" placeholder="Entrez votre email">
                 </div>
                 <div class="form-group">
                     <label>Mot de Passe</label>
-                    <input type="password" id="patientPassword" placeholder="Entrez votre mot de passe">
+                    <input type="password" id="loginPassword" placeholder="Entrez votre mot de passe">
                 </div>
-                <button class="login-btn" onclick="handleLogin('patient')">Se Connecter comme Patient</button>
+                <button class="login-btn" onclick="handleLogin()">Se Connecter</button>
                 <div class="forgot">
-                    <a href="#">Mot de passe oublié ?</a> | <a href="inscription.html?role=patient">Créer un Compte</a>
+                    <a href="#">Mot de passe oublié ?</a>
+                    <span id="signup-link">| <a href="inscription.html?role=patient">Créer un Compte</a></span>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
+        let selectedRole = 'patient';
+
+        const DASHBOARD_MAP = {
+            patient: 'tableau_bord_patient.html',
+            doctor: 'tableau_bord_dermatologue.html',
+            receptionist: 'tableau_bord_reception.html',
+            infermier: 'tableau_bord_infermier.html',
+            admin: 'tableau_bord_admin.html',
+        };
+
+        function selectRole(btn, role) {
+            document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            selectedRole = role;
+
+            // Show/hide signup link: only patients can sign up
+            const signupLink = document.getElementById('signup-link');
+            if (role === 'patient') {
+                signupLink.style.display = 'inline';
+            } else {
+                signupLink.style.display = 'none';
+            }
+        }
+
         const API_BASE = 'http://localhost:8000';
 
-        async function handleLogin(role) {
-            const email = document.getElementById(role + 'Email').value.trim();
-            const password = document.getElementById(role + 'Password').value;
+        async function handleLogin() {
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
 
             if (!email || !password) {
                 alert('Veuillez entrer votre email et mot de passe.');
@@ -228,13 +313,13 @@
                 const response = await fetch(API_BASE + '/auth/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email: email, password: password, role: role }),
+                    body: JSON.stringify({ email: email, password: password, role: selectedRole }),
                 });
 
                 const data = await response.json();
 
                 if (!response.ok) {
-                    throw new Error(data.detail || 'Échec de la connexion');
+                    throw new Error(data.detail || '\u00c9chec de la connexion');
                 }
 
                 localStorage.setItem('access_token', data.access_token);
@@ -244,13 +329,20 @@
                 localStorage.setItem('last_name', data.last_name);
                 localStorage.setItem('email', data.email);
 
-                window.location.href = 'tableau_bord_patient.html';
+                window.location.href = DASHBOARD_MAP[data.role] || 'accueil.html';
             } catch (error) {
                 alert(error.message);
                 btn.disabled = false;
                 btn.textContent = originalText;
             }
         }
+
+        // Also allow Enter key to submit
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                handleLogin();
+            }
+        });
     </script>
 </body>
 </html>

@@ -60,6 +60,17 @@ class Admin(Base):
     admin_level = Column(String, nullable=False)
 
 
+class Nurse(Base):
+    __tablename__ = "nurses"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), unique=True)
+    employee_id = Column(String, unique=True, nullable=False)
+    department = Column(String, nullable=True)
+    shift = Column(String, default="morning")
+    specialization = Column(String, nullable=True)
+
+
 class Appointment(Base):
     __tablename__ = "appointments"
 

@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Espace Infirmier - DermaFlow AI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #ef4444;
+            --primary-dark: #b91c1c;
+            --primary-light: #fee2e2;
+            --bg-light: #f8fafc;
+            --white: #ffffff;
+            --urgent-red: #ef4444;
+            --border: #e2e8f0;
+            --text-dark: #1e293b;
+            --success-green: #10b981;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-light);
+            margin: 0;
+            color: var(--text-dark);
+        }
+
+        header {
+            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+            color: white;
+            padding: 20px 10%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .nurse-profile {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .nurse-profile img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 2px solid white;
+            background: white;
+        }
+
+        nav {
+            background: white;
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--border);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .tab {
+            cursor: pointer;
+            font-weight: 600;
+            color: #64748b;
+            padding-bottom: 5px;
+            transition: 0.3s;
+        }
+
+        .tab.active {
+            color: var(--primary);
+            border-bottom: 3px solid var(--primary);
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 30px auto;
+            display: none;
+            animation: fadeIn 0.4s;
+        }
+
+        .container.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .grid-main {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #f1f5f9;
+            padding-bottom: 10px;
+        }
+
+        .card-header h3 {
+            margin: 0;
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-start {
+            background: var(--success-green);
+            color: white;
+        }
+
+        .btn-stop {
+            background: var(--urgent-red);
+            color: white;
+        }
+
+        .btn-outline {
+            background: none;
+            border: 1px solid white;
+            color: white;
+        }
+
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; font-weight: 600; color: var(--text-dark); margin-bottom: 6px; font-size: 0.9rem; }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px;
+            font-size: 0.95rem; box-sizing: border-box; transition: border-color 0.2s; font-family: inherit;
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+        }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .form-actions { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
+        .form-actions .btn { padding: 10px 20px; }
+        .form-error { font-size: 0.8rem; color: var(--urgent-red); margin-top: 4px; }
+
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .sub-box { background: #f1f5f9; border-radius: 8px; padding: 12px; }
+        .waiting-number { font-size: 3rem; font-weight: 800; color: #1e293b; margin: 10px 0; }
+
+        .profile-info-item { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #f1f5f9; }
+        .profile-info-item:last-child { border-bottom: none; }
+        .profile-info-label { color: #64748b; font-weight: 500; }
+        .profile-info-value { color: #1e293b; font-weight: 600; }
+
+        @media (max-width: 768px) {
+            .grid-main, .grid-3 { grid-template-columns: 1fr; }
+            nav { gap: 15px; font-size: 0.9rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="nurse-profile">
+            <img src="https://img.icons8.com/color/96/nurse-female.png" alt="Infirmier">
+            <div>
+                <h2 style="margin:0">Inf. ---</h2>
+                <small>Infirmier(ère) | Service ---</small>
+            </div>
+        </div>
+        <button class="btn btn-outline" onclick="window.location.href='accueil.html'">Déconnexion</button>
+    </header>
+
+    <nav>
+        <div class="tab active" onclick="switchTab('dashboard', this)">Tableau de Bord</div>
+        <div class="tab" onclick="switchTab('patients', this)">Patients</div>
+        <div class="tab" onclick="switchTab('taches', this)">Tâches</div>
+    </nav>
+
+    <!-- TABLEAU DE BORD -->
+    <div id="dashboard" class="container active">
+        <div class="grid-main">
+            <div>
+                <div class="card" style="background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%); color: white;">
+                    <h4 style="margin-top:0; color: white;">Bienvenue dans l'espace Infirmier</h4>
+                    <p>Utilisez les onglets ci-dessus pour naviguer entre les différentes sections.<br>Cette page est prête pour l'ajout de vos modèles.</p>
+                </div>
+                <div class="card">
+                    <div class="card-header"><h3><i class="fas fa-info-circle"></i> Informations Générales</h3></div>
+                    <p style="color:#64748b;">Cette section est réservée au contenu spécifique à l'espace infirmier. Vous pouvez y ajouter des widgets, des statistiques ou d'autres informations pertinentes.</p>
+                </div>
+            </div>
+            <div>
+                <div class="card">
+                    <div class="card-header"><h3>Résumé</h3></div>
+                    <div style="text-align:center; padding:20px;">
+                        <div style="font-size:2rem; font-weight:bold; color: var(--primary);">---</div>
+                        <small>En cours de développement</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PATIENTS -->
+    <div id="patients" class="container">
+        <div class="card">
+            <div class="card-header"><h3><i class="fas fa-user-injured"></i> Liste des Patients</h3></div>
+            <div style="text-align:center; padding:60px 20px; color:#94a3b8;">
+                <i class="fas fa-users" style="font-size:4rem; color:#e2e8f0; margin-bottom:20px;"></i>
+                <h4>Gestion des Patients</h4>
+                <p>Cette section sera développée prochainement par votre équipe.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- TÂCHES -->
+    <div id="taches" class="container">
+        <div class="card">
+            <div class="card-header"><h3><i class="fas fa-tasks"></i> Tâches Infirmières</h3></div>
+            <div style="text-align:center; padding:60px 20px; color:#94a3b8;">
+                <i class="fas fa-clipboard-list" style="font-size:4rem; color:#e2e8f0; margin-bottom:20px;"></i>
+                <h4>Tâches à venir</h4>
+                <p>Cette section sera développée prochainement par votre équipe.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tabId, el) {
+            document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            el.classList.add('active');
+        }
+    </script>
+
+</body>
+</html>
